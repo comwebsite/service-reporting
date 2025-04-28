@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Servise Reporting SRU Form</title>
+  <style>
+    /* Общие стили страницы */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+    /* Стили для формы */
+    form {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    form > div {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    form > div label {
+      flex: 1;
+      min-width: 120px;
+    }
+    form > div input {
+      flex: 2;
+      padding: 8px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    /* Табличная часть формы */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    table td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      vertical-align: middle;
+    }
+    table td:first-child {
+      width: 50%;
+      font-weight: bold;
+    }
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 8px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    /* Стили для кнопок и сообщений */
+    button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      font-size: 1.2em;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .error {
+      color: red;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .notification {
+      text-align: center;
+      font-size: 2em;
+      color: green;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Servise Reporting SRU Form</h1>
+  <form id="reportForm">
+    <!-- Верхняя часть с датой и временем -->
+    <div>
+      <div>
+        <label for="date">Date (ДД.ММ.ГГГГ):</label>
+        <input type="text" id="date" name="date" placeholder="ДД.ММ.ГГГГ" required pattern="\d{2}\.\d{2}\.\d{4}">
+      </div>
+      <div>
+        <label for="time">Time (чч:мм):</label>
+        <input type="text" id="time" name="time" placeholder="чч:мм" required pattern="\d{2}:\d{2}">
+      </div>
+    </div>
+    
+    <!-- Табличная часть формы -->
+    <table>
+      <tr>
+        <td><label for="temperature">Temperature:</label></td>
+        <td>
+          <input type="text" id="temperature" name="temperature" placeholder="Введите температуру" required
+                 pattern="^[0-9.,]+$" title="Поле может содержать только цифры, запятые и точки">
+        </td>
+      </tr>
+      <tr>
+        <td><label for="weather">Weather:</label></td>
+        <td>
+          <select id="weather" name="weather" required>
+            <option value="">Выберите погоду</option>
+            <option value="Ясно">Ясно</option>
+            <option value="Облачно">Облачно</option>
+            <option value="Сильный ветер">Сильный ветер</option>
+            <option value="Дождь">Дождь</option>
+            <option value="Снег">Снег</option>
+            <option value="Шторм">Шторм</option>
+            <option value="Ураган">Ураган</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="programmingHours">Сколько часов вы уделили программированию:</label>
+        </td>
+        <td>
+          <input type="text" id="programmingHours" name="programmingHours" placeholder="Введите количество часов" required>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="workHours">Сколько часов вы уделили работе:</label>
+        </td>
+        <td>
+          <input type="text" id="workHours" name="workHours" placeholder="Введите количество часов" required>
+        </td>
+      </tr>
+      <tr>
+        <td><label for="reportedBy">Reported by:</label></td>
+        <td>
+          <input type="text" id="reportedBy" name="reportedBy" placeholder="Ваше имя" required>
+        </td>
+      </tr>
+    </table>
+    
+    <!-- Блок для отображения ошибок -->
+    <div class="error" id="errorMessage"></div>
+    
+    <!-- Кнопка отправки -->
+    <button type="submit">Отправить отчёт</button>
+  </form>
+  
+  <!-- Уведомление об успешной отправке -->
+  <div class="notification" id="notification" style="display: none;">Отчет отправлен!</div>
+  
+  <!-- Подключение EmailJS через CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2/dist/email.min.js"></script>
+  <script>
+    // Инициализация EmailJS с использованием предоставленного публичного ключа
+    emailjs.init("KhdDEXpUg1yh9MvMZ");
+    
+    document.getElementById("reportForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      var errorMessage = document.getElementById("errorMessage");
+      errorMessage.textContent = "";
+      
+      // Получение данных из формы
+      var date = document.getElementById("date").value.trim();
+      var time = document.getElementById("time").value.trim();
+      var temperature = document.getElementById("temperature").value.trim();
+      var weather = document.getElementById("weather").value;
+      var programmingHours = document.getElementById("programmingHours").value.trim();
+      var workHours = document.getElementById("workHours").value.trim();
+      var reportedBy = document.getElementById("reportedBy").value.trim();
+      
+      // Простая проверка на заполненность полей
+      if (!date || !time || !temperature || !weather || !programmingHours || !workHours || !reportedBy) {
+        errorMessage.textContent = "Пожалуйста, заполните все поля.";
+        return;
+      }
+      
+      // Валидация поля Temperature (только цифры, запятые и точки)
+      var tempPattern = /^[0-9.,]+$/;
+      if (!tempPattern.test(temperature)) {
+        errorMessage.textContent = "Поле Temperature может содержать только цифры, запятые и точки.";
+        return;
+      }
+      
+      // Отправка данных через EmailJS с использованием Service ID и Template ID
+      emailjs.sendForm("service_example", "template_8wrmh3r", this)
+      .then(function(response) {
+        console.log("SUCCESS!", response.status, response.text);
+        document.getElementById("reportForm").reset();
+        var notification = document.getElementById("notification");
+        notification.style.display = "block";
+        setTimeout(function(){
+          notification.style.display = "none";
+        }, 5000);
+      }, function(error) {
+        console.log("FAILED...", error);
+        errorMessage.textContent = "Ошибка при отправке отчета, попробуйте еще раз.";
+      });
+    });
+  </script>
+</body>
+</html>
