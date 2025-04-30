@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Servise Reporting SRU Form</title>
   <style>
     /* Общие стили страницы */
@@ -57,7 +58,9 @@
       width: 50%;
       font-weight: bold;
     }
+    /* Обновлённое правило для всех полей ввода: включая text, number и select */
     input[type="text"],
+    input[type="number"],
     select {
       width: 100%;
       padding: 8px;
@@ -91,6 +94,15 @@
       font-size: 2em;
       color: green;
       margin-top: 20px;
+    }
+    /* Адаптация для телефонов */
+    @media (max-width: 600px) {
+      form, table {
+        width: 100%;
+      }
+      form > div {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -133,6 +145,15 @@
           </select>
         </td>
       </tr>
+      
+      <!-- Новый пункт с корректной ячейкой -->
+      <tr>
+        <td><label for="tasksCompleted">Сколько заданий выполнено в организации:</label></td>
+        <td>
+          <input type="number" id="tasksCompleted" name="tasksCompleted" placeholder="Введите число" required min="0" step="1">
+        </td>
+      </tr>
+      
       <tr>
         <td>
           <label for="programmingHours">Сколько часов вы уделили программированию:</label>
@@ -183,12 +204,13 @@
       var time = document.getElementById("time").value.trim();
       var temperature = document.getElementById("temperature").value.trim();
       var weather = document.getElementById("weather").value;
+      var tasksCompleted = document.getElementById("tasksCompleted").value.trim();
       var programmingHours = document.getElementById("programmingHours").value.trim();
       var workHours = document.getElementById("workHours").value.trim();
       var reportedBy = document.getElementById("reportedBy").value.trim();
       
       // Простая проверка на заполненность полей
-      if (!date || !time || !temperature || !weather || !programmingHours || !workHours || !reportedBy) {
+      if (!date || !time || !temperature || !weather || !tasksCompleted || !programmingHours || !workHours || !reportedBy) {
         errorMessage.textContent = "Пожалуйста, заполните все поля.";
         return;
       }
