@@ -16,7 +16,7 @@
       align-items: center;
       min-height: 100vh;
     }
-    /* Контейнер формы, ширина 600px, скруглённые углы */
+    /* Контейнер формы */
     #container {
       width: 600px;
       background: #fff;
@@ -28,7 +28,7 @@
       text-align: center;
       margin-bottom: 20px;
     }
-    /* Таблица с шириной 580px, имитирующая бланк */
+    /* Стилизация таблицы */
     table {
       width: 580px;
       margin: 0 auto;
@@ -36,10 +36,11 @@
     }
     th, td {
       padding: 10px;
-      border: 1px solid #ccc; /* Серые границы */
+      border: 1px solid #ccc;
       text-align: left;
+      vertical-align: top;
     }
-    /* Стили для input и select */
+    /* Стили полей ввода и списков */
     input[type="text"],
     input[type="number"],
     select {
@@ -51,23 +52,10 @@
       transition: border-color 0.3s;
       outline: none;
     }
-    /* При фокусе обводка становится чёрной */
     input:focus, select:focus {
       border: 2px solid black;
     }
-    /* Стили для объединённой строки Date и Time */
-    .date-time-container {
-      display: flex;
-      justify-content: space-between;
-    }
-    .date-time-item {
-      width: 48%;
-    }
-    .date-time-item label {
-      display: block;
-      margin-bottom: 5px;
-    }
-    /* Зеленая кнопка отправки, шириной 580px */
+    /* Кнопка отправки */
     .submit-btn {
       background-color: green;
       color: white;
@@ -99,58 +87,53 @@
       }
     }
   </style>
-  <!-- Все скрипты EmailJS удалены, теперь используется только FormSubmit -->
+  <!-- Из кода удалены все элементы и скрипты EmailJS. Используем только FormSubmit -->
 </head>
 <body>
   <div id="container">
     <h1>Service Reporting SRU Form</h1>
+    <!-- Блок для вывода ошибок, если потребуется -->
     <div id="error-message" class="error"></div>
     <!-- Форма отправки через FormSubmit -->
     <form id="serviceForm" action="https://formsubmit.co/pasa79427@gmail.com" method="POST">
       <!-- Скрытые поля для FormSubmit -->
       <input type="hidden" name="_subject" value="Service Reporting SRU Form Submission">
       <input type="hidden" name="_captcha" value="false">
-      <!-- Если требуется перенаправление после отправки, раскомментируйте и укажите URL: -->
+      <!-- Опционально: можно добавить поле перенаправления после отправки -->
       <!-- <input type="hidden" name="_next" value="https://yourwebsite.com/thank-you.html"> -->
       
       <table>
-        <!-- Объединённая строка для Date и Time -->
         <tr>
-          <td colspan="2">
-            <div class="date-time-container">
-              <div class="date-time-item">
-                <label for="date">Date</label>
-                <!-- Формат: 12.05.2025 -->
-                <input type="text" id="date" name="date" placeholder="ДД.ММ.ГГГГ" pattern="\d{2}\.\d{2}\.\d{4}" required>
-              </div>
-              <div class="date-time-item">
-                <label for="time">Time</label>
-                <!-- Формат: 14:30 -->
-                <input type="text" id="time" name="time" placeholder="ЧЧ:ММ" pattern="\d{2}:\d{2}" required>
-              </div>
-            </div>
+          <th>Date<br>(ДД.ММ.ГГГГ)</th>
+          <td>
+            <input type="text" name="date" placeholder="ДД.ММ.ГГГГ" required>
+          </td>
+        </tr>
+        <tr>
+          <th>Time<br>(ЧЧ:ММ)</th>
+          <td>
+            <input type="text" name="time" placeholder="ЧЧ:ММ" required>
           </td>
         </tr>
         <tr>
           <th>Temperature</th>
           <td>
-            <!-- Допустимые символы: цифры с опциональным знаком + или - -->
-            <input type="text" name="temperature" placeholder="+25 или -5" pattern="^[+-]?\d+$" required>
+            <input type="text" name="temperature" placeholder="+25 или -5" required>
           </td>
         </tr>
         <tr>
-          <th>Weather</th>
+          <th>Weather<br>(Выберите погоду)</th>
           <td>
             <select name="weather" required>
               <option value="" disabled selected>Выберите погоду</option>
               <option value="Ясно">Ясно</option>
-              <option value="Засуха">Засуха</option>
+              <option value="Дождь">Засуха</option>
               <option value="Туман">Туман</option>
-              <option value="Облачно">Облачно</option>
-              <option value="Дождь">Дождь</option>
-              <option value="Гроза">Гроза</option>
-              <option value="Град">Град</option>
-              <option value="Снег">Снег</option>
+			  <option value="Облачно">Облачно</option>
+			  <option value="Дождь">Дождь</option>
+			  <option value="Гроза">Гроза</option>
+			  <option value="Град">Град</option>
+			  <option value="Снег">Снег</option>
             </select>
           </td>
         </tr>
