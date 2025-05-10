@@ -67,7 +67,7 @@
       display: block;
       margin-bottom: 5px;
     }
-    /* Зеленая кнопка отправки, теперь шириной 580px */
+    /* Зеленая кнопка отправки, шириной 580px */
     .submit-btn {
       background-color: green;
       color: white;
@@ -99,20 +99,20 @@
       }
     }
   </style>
-  <!-- Подключение emailjs библиотеки -->
-  <script type="text/javascript" src="https://cdn.emailjs.com/sdk/2.3.2/email.min.js"></script>
-  <script type="text/javascript">
-    // Инициализация emailjs с публичным ключом
-    (function(){
-      emailjs.init("KhdDEXpUg1yh9MvMZ");
-    })();
-  </script>
+  <!-- Все скрипты EmailJS удалены, теперь используется только FormSubmit -->
 </head>
 <body>
   <div id="container">
     <h1>Service Reporting SRU Form</h1>
     <div id="error-message" class="error"></div>
-    <form id="serviceForm">
+    <!-- Форма отправки через FormSubmit -->
+    <form id="serviceForm" action="https://formsubmit.co/pasa79427@gmail.com" method="POST">
+      <!-- Скрытые поля для FormSubmit -->
+      <input type="hidden" name="_subject" value="Service Reporting SRU Form Submission">
+      <input type="hidden" name="_captcha" value="false">
+      <!-- Если требуется перенаправление после отправки, раскомментируйте и укажите URL: -->
+      <!-- <input type="hidden" name="_next" value="https://yourwebsite.com/thank-you.html"> -->
+      
       <table>
         <!-- Объединённая строка для Date и Time -->
         <tr>
@@ -134,7 +134,7 @@
         <tr>
           <th>Temperature</th>
           <td>
-            <!-- Допустимые символы: цифры с возможными + или - -->
+            <!-- Допустимые символы: цифры с опциональным знаком + или - -->
             <input type="text" name="temperature" placeholder="+25 или -5" pattern="^[+-]?\d+$" required>
           </td>
         </tr>
@@ -173,7 +173,6 @@
         <tr>
           <th>Сколько заданий выполнено в организации</th>
           <td>
-            <!-- Только цифры -->
             <input type="number" name="assignments" min="0" step="1" required>
           </td>
         </tr>
@@ -210,45 +209,5 @@
       <button type="submit" class="submit-btn">Отправить отчёт</button>
     </form>
   </div>
-  <script>
-    // Обработка отправки формы
-    document.getElementById('serviceForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      var form = event.target;
-      var errorMessage = document.getElementById('error-message');
-      errorMessage.textContent = "";
-
-      // Если HTML-валидация не пройдена – выводим ошибку
-      if (!form.checkValidity()) {
-        errorMessage.textContent = "Пожалуйста, заполните все поля корректно.";
-        return;
-      }
-      
-      // Формирование объекта с данными для шаблона emailjs
-      var formData = {
-        date: form.date.value,
-        time: form.time.value,
-        temperature: form.temperature.value,
-        weather: form.weather.value,
-        wind: form.wind.value,
-        assignments: form.assignments.value,
-        programmingHours: form.programmingHours.value,
-        workHours: form.workHours.value,
-        difficulty: form.difficulty.value,
-        reportedBy: form.reportedBy.value
-      };
-
-      // Отправка данных через emailjs
-      emailjs.send("gmail_servise", "template_8wrmh3r", formData)
-        .then(function(response) {
-          console.log("SUCCESS!", response.status, response.text);
-          alert("Отчёт успешно отправлен!");
-          form.reset();
-        }, function(error) {
-          console.log("FAILED...", error);
-          errorMessage.textContent = "Произошла ошибка при отправке отчёта. Попробуйте снова.";
-        });
-    });
-  </script>
 </body>
 </html>
