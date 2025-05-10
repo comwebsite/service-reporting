@@ -4,146 +4,144 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Service Reporting</title>
-  <!-- Подключение библиотеки EmailJS -->
-  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
   <style>
-    /* Сброс стилей */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
+    /* Основные стили страницы */
     body {
-      background: #f4f7f8;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
       padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
-    
-    .container {
-      width: 600px; /* Общий бланк – 600px */
-      margin: 0 auto;
+    /* Контейнер формы, ширина 600px, скруглённые углы */
+    #container {
+      width: 600px;
       background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      padding: 20px 0;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
     }
-    
     h1 {
       text-align: center;
-      color: #333;
-      padding: 10px 0;
-      font-size: 24px;
+      margin-bottom: 20px;
     }
-    
+    /* Таблица с шириной 580px, имитирующая бланк */
     table {
-      width: 575px; /* Таблица с границами – 500px */
+      width: 580px;
       margin: 0 auto;
       border-collapse: collapse;
     }
-    
-    td, th {
+    th, td {
       padding: 10px;
-      border: 1px solid #ccc; /* Границы остаются толщиной 1px */
+      border: 1px solid #ccc; /* Серые границы */
+      text-align: left;
     }
-    
-    td.label {
-      width: 40%;
-      font-weight: bold;
-      vertical-align: middle;
-    }
-    
-    td.input {
-      width: 60%;
-    }
-    
+    /* Стили для input и select */
     input[type="text"],
     input[type="number"],
     select {
       width: 100%;
       padding: 8px;
+      box-sizing: border-box;
       border: 1px solid #ccc;
       border-radius: 4px;
-      font-size: 14px;
       transition: border-color 0.3s;
-    }
-    
-    input:focus,
-    select:focus {
       outline: none;
-      border-color: #000; /* Обводка при фокусе установлена в чёрный цвет */
     }
-    
-    /* Вынесенная кнопка отправки */
-    .submit-row {
-      width: 500px; /* Выравниваем ширину кнопки с таблицей */
-      margin: 20px auto 0 auto;
-      text-align: center;
+    /* При фокусе обводка становится чёрной */
+    input:focus, select:focus {
+      border: 2px solid black;
     }
-    
+    /* Стили для объединённой строки Date и Time */
+    .date-time-container {
+      display: flex;
+      justify-content: space-between;
+    }
+    .date-time-item {
+      width: 48%;
+    }
+    .date-time-item label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    /* Зеленая кнопка отправки, теперь шириной 580px */
     .submit-btn {
-      background-color: #28a745;
+      background-color: green;
       color: white;
-      padding: 12px 0;
       border: none;
-      border-radius: 5px;
+      width: 580px;
+      padding: 10px 15px;
+      border-radius: 4px;
       cursor: pointer;
       font-size: 16px;
-      width: 100%;
-      transition: background-color 0.3s;
+      margin: 10px auto 0;
+      display: block;
     }
-    
     .submit-btn:hover {
-      background-color: #218838;
+      background-color: darkgreen;
     }
-    
-    /* Адаптивность для мобильных устройств */
-    @media (max-width: 600px) {
-      .container {
-        width: 100%;
-      }
-      table, .submit-row {
+    /* Сообщение об ошибке */
+    .error {
+      color: red;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    /* Адаптация для мобильных устройств */
+    @media (max-width: 700px) {
+      #container {
         width: 90%;
       }
-      td.label, td.input {
-        display: block;
+      table, .submit-btn {
         width: 100%;
-      }
-      tr {
-        margin-bottom: 15px;
-        display: block;
       }
     }
   </style>
+  <!-- Подключение emailjs библиотеки -->
+  <script type="text/javascript" src="https://cdn.emailjs.com/sdk/2.3.2/email.min.js"></script>
+  <script type="text/javascript">
+    // Инициализация emailjs с публичным ключом
+    (function(){
+      emailjs.init("KhdDEXpUg1yh9MvMZ");
+    })();
+  </script>
 </head>
 <body>
-  <div class="container">
+  <div id="container">
     <h1>Service Reporting SRU Form</h1>
-    <form id="reportForm">
+    <div id="error-message" class="error"></div>
+    <form id="serviceForm">
       <table>
+        <!-- Объединённая строка для Date и Time -->
         <tr>
-          <td class="label"><label for="date">Date:</label></td>
-          <td class="input">
-            <input type="text" id="date" name="date" placeholder="ДД.ММ.ГГГГ" pattern="\d{2}\.\d{2}\.\d{4}" required>
+          <td colspan="2">
+            <div class="date-time-container">
+              <div class="date-time-item">
+                <label for="date">Date</label>
+                <!-- Формат: 12.05.2025 -->
+                <input type="text" id="date" name="date" placeholder="ДД.ММ.ГГГГ" pattern="\d{2}\.\d{2}\.\d{4}" required>
+              </div>
+              <div class="date-time-item">
+                <label for="time">Time</label>
+                <!-- Формат: 14:30 -->
+                <input type="text" id="time" name="time" placeholder="ЧЧ:ММ" pattern="\d{2}:\d{2}" required>
+              </div>
+            </div>
           </td>
         </tr>
         <tr>
-          <td class="label"><label for="time">Time:</label></td>
-          <td class="input">
-            <input type="text" id="time" name="time" placeholder="ЧЧ:ММ" pattern="\d{2}:\d{2}" required>
+          <th>Temperature</th>
+          <td>
+            <!-- Допустимые символы: цифры с возможными + или - -->
+            <input type="text" name="temperature" placeholder="+25 или -5" pattern="^[+-]?\d+$" required>
           </td>
         </tr>
         <tr>
-          <td class="label"><label for="temperature">Temperature:</label></td>
-          <td class="input">
-            <input type="text" id="temperature" name="temperature" placeholder="+25 или -5" pattern="[\+\-]?\d+" required>
-          </td>
-        </tr>
-        <tr>
-          <td class="label"><label for="weather">Weather:</label></td>
-          <td class="input">
-            <select id="weather" name="weather" required>
+          <th>Weather</th>
+          <td>
+            <select name="weather" required>
               <option value="" disabled selected>Выберите погоду</option>
               <option value="Ясно">Ясно</option>
               <option value="Засуха">Засуха</option>
@@ -157,9 +155,9 @@
           </td>
         </tr>
         <tr>
-          <td class="label"><label for="windLevel">Уровень ветра:</label></td>
-          <td class="input">
-            <select id="windLevel" name="windLevel" required>
+          <th>Уровень ветра</th>
+          <td>
+            <select name="wind" required>
               <option value="" disabled selected>Выберите уровень ветра</option>
               <option value="Нет">Нет</option>
               <option value="Легкий">Легкий</option>
@@ -173,27 +171,28 @@
           </td>
         </tr>
         <tr>
-          <td class="label"><label for="tasksCompleted">Сколько заданий выполнено в организации:</label></td>
-          <td class="input">
-            <input type="number" id="tasksCompleted" name="tasksCompleted" min="0" required>
+          <th>Сколько заданий выполнено в организации</th>
+          <td>
+            <!-- Только цифры -->
+            <input type="number" name="assignments" min="0" step="1" required>
           </td>
         </tr>
         <tr>
-          <td class="label"><label for="programmingHours">Сколько часов уделено программированию:</label></td>
-          <td class="input">
-            <input type="number" id="programmingHours" name="programmingHours" min="0" required>
+          <th>Сколько часов уделено программированию</th>
+          <td>
+            <input type="number" name="programmingHours" min="0" step="1" required>
           </td>
         </tr>
         <tr>
-          <td class="label"><label for="workHours">Сколько часов уделено работе:</label></td>
-          <td class="input">
-            <input type="number" id="workHours" name="workHours" min="0" required>
+          <th>Сколько часов уделено работе</th>
+          <td>
+            <input type="number" name="workHours" min="0" step="1" required>
           </td>
         </tr>
         <tr>
-          <td class="label"><label for="workDifficulty">Уровень сложности работы:</label></td>
-          <td class="input">
-            <select id="workDifficulty" name="workDifficulty" required>
+          <th>Уровень сложности работы</th>
+          <td>
+            <select name="difficulty" required>
               <option value="" disabled selected>Выберите уровень сложности</option>
               <option value="Легкий">Легкий</option>
               <option value="Умеренный">Умеренный</option>
@@ -202,41 +201,53 @@
           </td>
         </tr>
         <tr>
-          <td class="label"><label for="reportedBy">Reported by:</label></td>
-          <td class="input">
-            <input type="text" id="reportedBy" name="reportedBy" placeholder="Ваше имя" required>
+          <th>Reported by</th>
+          <td>
+            <input type="text" name="reportedBy" placeholder="Ваше имя" required>
           </td>
         </tr>
       </table>
-      <!-- Кнопка отправки вынесена за пределы таблицы -->
-      <div class="submit-row">
-        <button type="submit" class="submit-btn">Отправить отчёт</button>
-      </div>
+      <button type="submit" class="submit-btn">Отправить отчёт</button>
     </form>
   </div>
-
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Инициализация EmailJS с использованием сервисного ID "gmail_servise"
-      emailjs.init("gmail_servise");
-      const form = document.getElementById('reportForm');
+    // Обработка отправки формы
+    document.getElementById('serviceForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      var form = event.target;
+      var errorMessage = document.getElementById('error-message');
+      errorMessage.textContent = "";
+
+      // Если HTML-валидация не пройдена – выводим ошибку
+      if (!form.checkValidity()) {
+        errorMessage.textContent = "Пожалуйста, заполните все поля корректно.";
+        return;
+      }
       
-      form.addEventListener('submit', function(event) {
-        event.preventDefault();
-        if (!form.checkValidity()) {
-          alert("Пожалуйста, заполните все поля корректно.");
-          return;
-        }
-        emailjs.sendForm("gmail_servise", "template_8wrmh3r", this)
-          .then(function(response) {
-            console.log("SUCCESS!", response.status, response.text);
-            alert("Отчёт успешно отправлен!");
-            form.reset();
-          }, function(error) {
-            console.log("FAILED...", error);
-            alert("Ошибка при отправке отчёта. Попробуйте снова.");
-          });
-      });
+      // Формирование объекта с данными для шаблона emailjs
+      var formData = {
+        date: form.date.value,
+        time: form.time.value,
+        temperature: form.temperature.value,
+        weather: form.weather.value,
+        wind: form.wind.value,
+        assignments: form.assignments.value,
+        programmingHours: form.programmingHours.value,
+        workHours: form.workHours.value,
+        difficulty: form.difficulty.value,
+        reportedBy: form.reportedBy.value
+      };
+
+      // Отправка данных через emailjs
+      emailjs.send("gmail_servise", "template_8wrmh3r", formData)
+        .then(function(response) {
+          console.log("SUCCESS!", response.status, response.text);
+          alert("Отчёт успешно отправлен!");
+          form.reset();
+        }, function(error) {
+          console.log("FAILED...", error);
+          errorMessage.textContent = "Произошла ошибка при отправке отчёта. Попробуйте снова.";
+        });
     });
   </script>
 </body>
