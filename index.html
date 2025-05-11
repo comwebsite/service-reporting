@@ -92,7 +92,7 @@
 <body>
   <div id="container">
     <h1>Service Reporting SRU Form</h1>
-    <!-- Блок для вывода ошибок, если потребуется -->
+    <!-- Блок для вывода ошибок -->
     <div id="error-message" class="error"></div>
     <!-- Форма отправки через FormSubmit -->
     <form id="serviceForm" action="https://formsubmit.co/pasa79427@gmail.com" method="POST">
@@ -103,37 +103,36 @@
       <!-- <input type="hidden" name="_next" value="https://yourwebsite.com/thank-you.html"> -->
       
       <table>
+        <!-- Объединённая строка для Date и Time с равной шириной и вертикальной границей посередине -->
         <tr>
-          <th>Date<br>(ДД.ММ.ГГГГ)</th>
-          <td>
+          <td style="width:50%; border-right: 1px solid #ccc;">
+            <b>Date</b>
             <input type="text" name="date" placeholder="ДД.ММ.ГГГГ" required>
           </td>
-        </tr>
-        <tr>
-          <th>Time<br>(ЧЧ:ММ)</th>
-          <td>
+          <td style="width:50%;">
+            <b>Time</b>
             <input type="text" name="time" placeholder="ЧЧ:ММ" required>
           </td>
         </tr>
         <tr>
           <th>Temperature</th>
           <td>
-            <input type="text" name="temperature" placeholder="+25 или -5" required>
+            <input type="text" name="temperature" placeholder="Введите температуру" required>
           </td>
         </tr>
         <tr>
-          <th>Weather<br>(Выберите погоду)</th>
+          <th>Weather</th>
           <td>
             <select name="weather" required>
               <option value="" disabled selected>Выберите погоду</option>
               <option value="Ясно">Ясно</option>
               <option value="Дождь">Засуха</option>
               <option value="Туман">Туман</option>
-			  <option value="Облачно">Облачно</option>
-			  <option value="Дождь">Дождь</option>
-			  <option value="Гроза">Гроза</option>
-			  <option value="Град">Град</option>
-			  <option value="Снег">Снег</option>
+              <option value="Облачно">Облачно</option>
+              <option value="Дождь">Дождь</option>
+              <option value="Гроза">Гроза</option>
+              <option value="Град">Град</option>
+              <option value="Снег">Снег</option>
             </select>
           </td>
         </tr>
@@ -155,28 +154,23 @@
         </tr>
         <tr>
           <th>Сколько заданий выполнено в организации</th>
-          <td>
-            <input type="number" name="assignments" min="0" step="1" required>
-          </td>
+          <td><input type="number" name="assignments" min="0" step="1" required></td>
         </tr>
         <tr>
           <th>Сколько часов уделено программированию</th>
-          <td>
-            <input type="number" name="programmingHours" min="0" step="1" required>
-          </td>
+          <td><input type="number" name="programmingHours" min="0" step="1" required></td>
         </tr>
         <tr>
           <th>Сколько часов уделено работе</th>
-          <td>
-            <input type="number" name="workHours" min="0" step="1" required>
-          </td>
+          <td><input type="number" name="workHours" min="0" step="1" required></td>
         </tr>
         <tr>
           <th>Уровень сложности работы</th>
           <td>
             <select name="difficulty" required>
               <option value="" disabled selected>Выберите уровень сложности</option>
-              <option value="Легкий">Легкий</option>
+              <option value="Нейтральный">Нейтральный</option>
+				<option value="Легкий">Легкий</option>
               <option value="Умеренный">Умеренный</option>
               <option value="Сложный">Сложный</option>
             </select>
@@ -184,9 +178,7 @@
         </tr>
         <tr>
           <th>Reported by</th>
-          <td>
-            <input type="text" name="reportedBy" placeholder="Ваше имя" required>
-          </td>
+          <td><input type="text" name="reportedBy" placeholder="Ваше имя" required></td>
         </tr>
       </table>
       <button type="submit" class="submit-btn">Отправить отчёт</button>
