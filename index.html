@@ -87,17 +87,16 @@
       }
     }
   </style>
-  <!-- Из кода удалены все элементы и скрипты EmailJS. Используем только FormSubmit -->
 </head>
 <body>
   <div id="container">
-    <h1>Service Reporting SRU Form</h1>
+    <h1>Service Reporting</h1>
     <!-- Блок для вывода ошибок -->
     <div id="error-message" class="error"></div>
     <!-- Форма отправки через FormSubmit -->
     <form id="serviceForm" action="https://formsubmit.co/pasa79427@gmail.com" method="POST">
       <!-- Скрытые поля для FormSubmit -->
-      <input type="hidden" name="_subject" value="Service Reporting SRU Form Submission">
+      <input type="hidden" name="_subject" value="Service Reporting Form Submission">
       <input type="hidden" name="_captcha" value="false">
       <!-- Опционально: можно добавить поле перенаправления после отправки -->
       <!-- <input type="hidden" name="_next" value="https://yourwebsite.com/thank-you.html"> -->
@@ -107,81 +106,88 @@
         <tr>
           <td style="width:50%; border-right: 1px solid #ccc;">
             <b>Date</b>
-            <input type="text" name="date" placeholder="ДД.ММ.ГГГГ" required>
+            <input type="text" name="date" placeholder="MM.DD.YYYY" required>
           </td>
           <td style="width:50%;">
             <b>Time</b>
-            <input type="text" name="time" placeholder="ЧЧ:ММ" required>
+            <input type="text" name="time" placeholder="HH:MM" required>
           </td>
         </tr>
         <tr>
           <th>Temperature</th>
           <td>
-            <input type="text" name="temperature" placeholder="Введите температуру" required>
+            <input type="text" name="temperature" placeholder="Enter the temperature" required>
           </td>
         </tr>
         <tr>
           <th>Weather</th>
           <td>
             <select name="weather" required>
-              <option value="" disabled selected>Выберите погоду</option>
-              <option value="Ясно">Ясно</option>
-              <option value="Дождь">Засуха</option>
-              <option value="Туман">Туман</option>
-              <option value="Облачно">Облачно</option>
-              <option value="Дождь">Дождь</option>
-              <option value="Гроза">Гроза</option>
-              <option value="Град">Град</option>
-              <option value="Снег">Снег</option>
+              <option value="" disabled selected>Select the weather</option>
+              <option value="Clear">Clear</option>
+              <option value="Drought">Drought</option>
+              <option value="Fog">Fog</option>
+              <option value="Cloudy">Cloudy</option>
+              <option value="Rain">Rain</option>
+              <option value="Thunderstorm">Thunderstorm</option>
+              <option value="Hail">Hail</option>
+              <option value="Snow">Snow</option>
             </select>
           </td>
         </tr>
         <tr>
-          <th>Уровень ветра</th>
+          <th>Wind</th>
           <td>
             <select name="wind" required>
-              <option value="" disabled selected>Выберите уровень ветра</option>
-              <option value="Нет">Нет</option>
-              <option value="Легкий">Легкий</option>
-              <option value="Слабый">Слабый</option>
-              <option value="Умеренный">Умеренный</option>
-              <option value="Свежий ветер">Свежий ветер</option>
-              <option value="Сильный">Сильный</option>
-              <option value="Шторм">Шторм</option>
-              <option value="Ураган">Ураган</option>
+              <option value="" disabled selected>Select the wind level</option>
+              <option value="Neutral">Neutral</option>
+              <option value="Light">Light</option>
+              <option value="Weak">Weak</option>
+              <option value="Moderate">Moderate</option>
+              <option value="Fresh breeze">Fresh breeze</option>
+              <option value="Strong">Strong</option>
+              <option value="Storm">Storm</option>
+              <option value="Hurricane">Hurricane</option>
             </select>
           </td>
         </tr>
         <tr>
-          <th>Сколько заданий выполнено в организации</th>
+          <th>Tasks completed</th>
           <td><input type="number" name="assignments" min="0" step="1" required></td>
         </tr>
         <tr>
-          <th>Сколько часов уделено программированию</th>
-          <td><input type="number" name="programmingHours" min="0" step="1" required></td>
-        </tr>
         <tr>
-          <th>Сколько часов уделено работе</th>
+          <th>Working hours</th>
           <td><input type="number" name="workHours" min="0" step="1" required></td>
         </tr>
         <tr>
-          <th>Уровень сложности работы</th>
+          <th>Work difficulty</th>
           <td>
             <select name="difficulty" required>
-              <option value="" disabled selected>Выберите уровень сложности</option>
-              <option value="Нейтральный">Нейтральный</option>
-				<option value="Легкий">Легкий</option>
-              <option value="Умеренный">Умеренный</option>
-              <option value="Сложный">Сложный</option>
+              <option value="" disabled selected>Select the work difficulty</option>
+              <option value="Neutral">Neutral</option>
+				<option value="Easy">Easy</option>
+              <option value="Moderate">Moderate</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </td>
+        </tr>
+			<tr>
+          <th>Shift type</th>
+          <td>
+            <select name="shiftType" required>
+              <option value="" disabled selected>Select shift type</option>
+              <option value="Day">Day</option>
+              <option value="Night">Night</option>
             </select>
           </td>
         </tr>
         <tr>
           <th>Reported by</th>
-          <td><input type="text" name="reportedBy" placeholder="Ваше имя" required></td>
+          <td><input type="text" name="reportedBy" placeholder="Your name" required></td>
         </tr>
       </table>
-      <button type="submit" class="submit-btn">Отправить отчёт</button>
+      <button type="submit" class="submit-btn">Submit report</button>
     </form>
   </div>
 </body>
