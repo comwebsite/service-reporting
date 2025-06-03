@@ -2,193 +2,295 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Service Reporting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service reporting</title>
   <style>
-    /* Основные стили страницы */
+    /* Глобальное правило: чтобы padding учитывался во всех элементах */
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
       margin: 0;
-      padding: 20px;
+      padding: 20px; /* немного отступа вокруг */
+      background: #f9f9f9;
+      font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
     }
-    /* Контейнер формы */
-    #container {
-      width: 600px;
+    .container {
       background: #fff;
-      padding: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 2rem;
       border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 500px;
+      margin: 20px;
+      animation: fadeIn 0.8s ease-in;
     }
-    h1 {
+    .container h1 {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
     }
-    /* Стилизация таблицы */
-    table {
-      width: 580px;
-      margin: 0 auto;
-      border-collapse: collapse;
+    form {
+      display: grid;
+      gap: 1rem;
     }
-    th, td {
-      padding: 10px;
-      border: 1px solid #ccc;
-      text-align: left;
-      vertical-align: top;
+    .input-row {
+      display: flex;
+      gap: 1rem;
     }
-    /* Стили полей ввода и списков */
-    input[type="text"],
-    input[type="number"],
-    select {
-      width: 100%;
-      padding: 8px;
-      box-sizing: border-box;
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    label {
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+    input[type="text"], select {
+      padding: 0.5rem;
       border: 1px solid #ccc;
       border-radius: 4px;
-      transition: border-color 0.3s;
+      transition: border-color 0.3s ease;
+      font-size: 1rem;
+    }
+    input[type="text"]:focus, select:focus {
+      border: 1px solid black;
       outline: none;
     }
-    input:focus, select:focus {
-      border: 2px solid black;
-    }
-    /* Кнопка отправки */
     .submit-btn {
-      background-color: green;
-      color: white;
+      background-color: #28a745;
+      color: #fff;
       border: none;
-      width: 580px;
-      padding: 10px 15px;
+      padding: 0.8rem;
       border-radius: 4px;
+      font-size: 1rem;
       cursor: pointer;
-      font-size: 16px;
-      margin: 10px auto 0;
-      display: block;
+      transition: background-color 0.3s;
+      width: 100%;
     }
     .submit-btn:hover {
-      background-color: darkgreen;
+      background-color: #218838;
     }
-    /* Сообщение об ошибке */
     .error {
       color: red;
+      font-size: 0.9rem;
       text-align: center;
-      margin-bottom: 10px;
     }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
     /* Адаптация для мобильных устройств */
-    @media (max-width: 700px) {
-      #container {
-        width: 90%;
+    @media (max-width: 600px) {
+      .container {
+        padding: 1.5rem;
+        margin: 10px;
       }
-      table, .submit-btn {
-        width: 100%;
+      .input-row {
+        flex-direction: column;
+      }
+      input[type="text"], select {
+        font-size: 0.95rem;
+      }
+      .submit-btn {
+        font-size: 0.95rem;
+        padding: 0.7rem;
       }
     }
   </style>
 </head>
 <body>
-  <div id="container">
-    <h1>Service Reporting</h1>
-    <!-- Блок для вывода ошибок -->
-    <div id="error-message" class="error"></div>
+  <div class="container">
+    <h1>Service reporting</h1>
     <!-- Форма отправки через FormSubmit -->
-    <form id="serviceForm" action="https://formsubmit.co/pasa79427@gmail.com" method="POST">
-      <!-- Скрытые поля для FormSubmit -->
-      <input type="hidden" name="_subject" value="Service Reporting Form Submission">
+    <form id="reportForm" action="https://formsubmit.co/pasa79427@gmail.com" method="POST">
+      <!-- Обязательные скрытые поля для FormSubmit -->
+      <input type="hidden" name="_subject" value="New Service Report">
       <input type="hidden" name="_captcha" value="false">
-      <!-- Опционально: можно добавить поле перенаправления после отправки -->
-      <!-- <input type="hidden" name="_next" value="https://yourwebsite.com/thank-you.html"> -->
       
-      <table>
-        <!-- Объединённая строка для Date и Time с равной шириной и вертикальной границей посередине -->
-        <tr>
-          <td style="width:50%; border-right: 1px solid #ccc;">
-            <b>Date</b>
-            <input type="text" name="date" placeholder="MM.DD.YYYY" required>
-          </td>
-          <td style="width:50%;">
-            <b>Time</b>
-            <input type="text" name="time" placeholder="HH:MM" required>
-          </td>
-        </tr>
-        <tr>
-          <th>Temperature</th>
-          <td>
-            <input type="text" name="temperature" placeholder="Enter the temperature" required>
-          </td>
-        </tr>
-        <tr>
-          <th>Weather</th>
-          <td>
-            <select name="weather" required>
-              <option value="" disabled selected>Select the weather</option>
-              <option value="Clear">Clear</option>
-              <option value="Drought">Drought</option>
-              <option value="Fog">Fog</option>
-              <option value="Cloudy">Cloudy</option>
-              <option value="Rain">Rain</option>
-              <option value="Thunderstorm">Thunderstorm</option>
-              <option value="Hail">Hail</option>
-              <option value="Snow">Snow</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <th>Wind</th>
-          <td>
-            <select name="wind" required>
-              <option value="" disabled selected>Select the wind level</option>
-              <option value="Neutral">Neutral</option>
-              <option value="Light">Light</option>
-              <option value="Weak">Weak</option>
-              <option value="Moderate">Moderate</option>
-              <option value="Fresh breeze">Fresh breeze</option>
-              <option value="Strong">Strong</option>
-              <option value="Storm">Storm</option>
-              <option value="Hurricane">Hurricane</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <th>Tasks completed</th>
-          <td><input type="number" name="assignments" min="0" step="1" required></td>
-        </tr>
-        <tr>
-        <tr>
-          <th>Working hours</th>
-          <td><input type="number" name="workHours" min="0" step="1" required></td>
-        </tr>
-        <tr>
-          <th>Work difficulty</th>
-          <td>
-            <select name="difficulty" required>
-              <option value="" disabled selected>Select the work difficulty</option>
-              <option value="Neutral">Neutral</option>
-				<option value="Easy">Easy</option>
-              <option value="Moderate">Moderate</option>
-              <option value="Hard">Hard</option>
-            </select>
-          </td>
-        </tr>
-			<tr>
-          <th>Shift type</th>
-          <td>
-            <select name="shiftType" required>
-              <option value="" disabled selected>Select shift type</option>
-              <option value="Day">Day</option>
-              <option value="Night">Night</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <th>Reported by</th>
-          <td><input type="text" name="reportedBy" placeholder="Your name" required></td>
-        </tr>
-      </table>
+      <!-- Первая строка: Date и Time -->
+      <div class="input-row">
+        <div class="input-group">
+          <label for="date">Date </label>
+          <input type="text" id="date" name="date" placeholder="DD.MM.YYYY" required>
+        </div>
+        <div class="input-group">
+          <label for="time">Time</label>
+          <input type="text" id="time" name="time" placeholder="HH:MM" required>
+        </div>
+      </div>
+      
+      <!-- Temperature -->
+      <div class="input-group">
+        <label for="temperature">Temperature (Enter the temperature)</label>
+        <input type="text" id="temperature" name="temperature" placeholder="Enter the temperature" required>
+      </div>
+      
+      <!-- Weather -->
+      <div class="input-group">
+        <label for="weather">Weather</label>
+        <select id="weather" name="weather" required>
+          <option value="" disabled selected>Select the weather</option>
+          <option value="Ясно">Ясно</option>
+          <option value="Засуха">Засуха</option>
+          <option value="Туман">Туман</option>
+          <option value="Облачно">Облачно</option>
+          <option value="Дождь">Дождь</option>
+          <option value="Град">Град</option>
+          <option value="Гроза">Гроза</option>
+          <option value="Снег">Снег</option>
+        </select>
+      </div>
+      
+      <!-- Wind -->
+      <div class="input-group">
+        <label for="wind">Wind</label>
+        <select id="wind" name="wind" required>
+          <option value="" disabled selected>Select the wind level</option>
+          <option value="Нейтральный">Нейтральный</option>
+          <option value="Легкий">Легкий</option>
+          <option value="Слабый">Слабый</option>
+          <option value="Умеренный">Умеренный</option>
+          <option value="Свежий ветер">Свежий ветер</option>
+          <option value="Сильный">Сильный</option>
+          <option value="Шторм">Шторм</option>
+          <option value="Ураган">Ураган</option>
+        </select>
+      </div>
+      
+      <!-- Tasks Completed -->
+      <div class="input-group">
+        <label for="tasksCompleted">Tasks completed</label>
+        <input type="text" id="tasksCompleted" name="tasksCompleted" placeholder="Enter tasks completed" required>
+      </div>
+      
+      <!-- Working Hours -->
+      <div class="input-group">
+        <label for="workingHours">Working hours</label>
+        <input type="text" id="workingHours" name="workingHours" placeholder="Enter working hours" required>
+      </div>
+      
+      <!-- Work Difficulty -->
+      <div class="input-group">
+        <label for="workDifficulty">Work difficulty</label>
+        <select id="workDifficulty" name="workDifficulty" required>
+          <option value="" disabled selected>Select the work difficulty</option>
+          <option value="Neutral">Neutral</option>
+          <option value="Easy">Easy</option>
+          <option value="Moderate">Moderate</option>
+          <option value="Hard">Hard</option>
+        </select>
+      </div>
+      
+      <!-- Shift Type -->
+      <div class="input-group">
+        <label for="shiftType">Shift type</label>
+        <select id="shiftType" name="shiftType" required>
+          <option value="" disabled selected>Select shift type</option>
+          <option value="Day">Day</option>
+          <option value="Night">Night</option>
+        </select>
+      </div>
+      
+      <!-- Reported By -->
+      <div class="input-group">
+        <label for="reportedBy">Reported by</label>
+        <input type="text" id="reportedBy" name="reportedBy" placeholder="Your name" required>
+      </div>
+      
+      <!-- Место для вывода ошибок -->
+      <div class="error" id="error"></div>
+      
+      <!-- Кнопка отправки -->
       <button type="submit" class="submit-btn">Submit report</button>
     </form>
   </div>
+
+  <script>
+    // Получаем элементы формы
+    const form = document.getElementById('reportForm');
+    const errorDiv = document.getElementById('error');
+    const dateInput = document.getElementById('date');
+    const timeInput = document.getElementById('time');
+    const temperatureInput = document.getElementById('temperature');
+    const tasksCompletedInput = document.getElementById('tasksCompleted');
+    const workingHoursInput = document.getElementById('workingHours');
+
+    // Функция валидации
+    function validateInput() {
+      errorDiv.textContent = '';
+
+      // Дата: формат DD.MM.YYYY (только цифры и точки)
+      const datePattern = /^(0[1-9]|[12]\d|3[01])\.(0[1-9]|1[0-2])\.\d{4}$/;
+      if (!datePattern.test(dateInput.value)) {
+        errorDiv.textContent = 'Please enter a valid date in DD.MM.YYYY format.';
+        return false;
+      }
+
+      // Время: формат HH:MM (24-часовой, только цифры и :)
+      const timePattern = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
+      if (!timePattern.test(timeInput.value)) {
+        errorDiv.textContent = 'Please enter a valid time in HH:MM format.';
+        return false;
+      }
+
+      // Temperature: допускаются только цифры, точка и запятая
+      const temperaturePattern = /^[\d\.,]+$/;
+      if (!temperaturePattern.test(temperatureInput.value)) {
+        errorDiv.textContent = 'Please enter a valid temperature (only numbers, dot and comma allowed).';
+        return false;
+      }
+
+      // Tasks Completed: только цифры без разделителей
+      const numberPattern = /^\d+$/;
+      if (!numberPattern.test(tasksCompletedInput.value)) {
+        errorDiv.textContent = 'Please enter a valid number for Tasks completed.';
+        return false;
+      }
+
+      // Working Hours: только цифры
+      if (!numberPattern.test(workingHoursInput.value)) {
+        errorDiv.textContent = 'Please enter a valid number for Working hours.';
+        return false;
+      }
+
+      return true;
+    }
+
+    // Обработка отправки формы с использованием fetch для AJAX-запроса
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      if (!validateInput()) {
+        return;
+      }
+
+      const formData = new FormData(form);
+
+      fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Report submitted successfully!');
+          form.reset();
+        } else {
+          errorDiv.textContent = 'Error submitting report. Please try again.';
+        }
+      })
+      .catch(error => {
+        errorDiv.textContent = 'Error submitting report. Please try again.';
+      });
+    });
+  </script>
 </body>
 </html>
