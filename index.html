@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Service reporting</title>
   <style>
     /* Глобальное правило: чтобы padding учитывался во всех элементах */
@@ -11,7 +11,7 @@
     }
     body {
       margin: 0;
-      padding: 20px; /* немного отступа вокруг */
+      padding: 20px;
       background: #f9f9f9;
       font-family: Arial, sans-serif;
       display: flex;
@@ -39,9 +39,12 @@
       display: grid;
       gap: 1rem;
     }
+    /* Блок Date и Time всегда в одной строке */
     .input-row {
       display: flex;
       gap: 1rem;
+      flex-direction: row;
+      flex-wrap: nowrap;
     }
     .input-group {
       display: flex;
@@ -86,15 +89,12 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
-    /* Адаптация для мобильных устройств */
+    /* Адаптация для мобильных устройств, остальные элементы подстраиваются по размеру,
+       но блок Date и Time остаётся в одной строке */
     @media (max-width: 600px) {
       .container {
         padding: 1.5rem;
         margin: 10px;
-      }
-      .input-row {
-        flex-direction: column;
       }
       input[type="text"], select {
         font-size: 0.95rem;
@@ -111,14 +111,14 @@
     <h1>Service reporting</h1>
     <!-- Форма отправки через FormSubmit -->
     <form id="reportForm" action="https://formsubmit.co/pasa79427@gmail.com" method="POST">
-      <!-- Обязательные скрытые поля для FormSubmit -->
+      <!-- Скрытые поля для FormSubmit -->
       <input type="hidden" name="_subject" value="New Service Report">
       <input type="hidden" name="_captcha" value="false">
       
-      <!-- Первая строка: Date и Time -->
+      <!-- Блок Date и Time в одной строке -->
       <div class="input-row">
         <div class="input-group">
-          <label for="date">Date </label>
+          <label for="date">Date</label>
           <input type="text" id="date" name="date" placeholder="DD.MM.YYYY" required>
         </div>
         <div class="input-group">
@@ -129,7 +129,7 @@
       
       <!-- Temperature -->
       <div class="input-group">
-        <label for="temperature">Temperature (Enter the temperature)</label>
+        <label for="temperature">Temperature</label>
         <input type="text" id="temperature" name="temperature" placeholder="Enter the temperature" required>
       </div>
       
@@ -205,7 +205,7 @@
         <input type="text" id="reportedBy" name="reportedBy" placeholder="Your name" required>
       </div>
       
-      <!-- Место для вывода ошибок -->
+      <!-- Блок для ошибок -->
       <div class="error" id="error"></div>
       
       <!-- Кнопка отправки -->
@@ -227,14 +227,14 @@
     function validateInput() {
       errorDiv.textContent = '';
 
-      // Дата: формат DD.MM.YYYY (только цифры и точки)
+      // Валидация даты: формат DD.MM.YYYY (только цифры и точки)
       const datePattern = /^(0[1-9]|[12]\d|3[01])\.(0[1-9]|1[0-2])\.\d{4}$/;
       if (!datePattern.test(dateInput.value)) {
         errorDiv.textContent = 'Please enter a valid date in DD.MM.YYYY format.';
         return false;
       }
 
-      // Время: формат HH:MM (24-часовой, только цифры и :)
+      // Валидация времени: формат HH:MM (24-часовой)
       const timePattern = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
       if (!timePattern.test(timeInput.value)) {
         errorDiv.textContent = 'Please enter a valid time in HH:MM format.';
@@ -248,7 +248,7 @@
         return false;
       }
 
-      // Tasks Completed: только цифры без разделителей
+      // Tasks Completed: только цифры
       const numberPattern = /^\d+$/;
       if (!numberPattern.test(tasksCompletedInput.value)) {
         errorDiv.textContent = 'Please enter a valid number for Tasks completed.';
@@ -264,7 +264,7 @@
       return true;
     }
 
-    // Обработка отправки формы с использованием fetch для AJAX-запроса
+    // Обработка отправки формы
     form.addEventListener('submit', function(e) {
       e.preventDefault();
 
