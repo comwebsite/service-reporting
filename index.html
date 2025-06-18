@@ -58,7 +58,7 @@
     label {
       margin-bottom: 5px;
       font-weight: bold;
-      color: #333; /* Обновлённый более тёмный цвет текста */
+      color: #333;
     }
 
     input[type="text"],
@@ -105,6 +105,13 @@
       from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+
+    /* Медиа-запрос для мобильных устройств */
+    @media (max-width: 480px) {
+      .row {
+        flex-direction: column;
+      }
+    }
   </style>
 </head>
 <body>
@@ -119,19 +126,19 @@
       <!-- В одной строке два пункта: Date и Time -->
       <div class="row">
         <div class="form-group" style="flex: 1;">
-          <label for="date">Date (DD.MM.YYYY)</label>
+          <label for="date">Date</label>
           <input type="text" id="date" name="date" placeholder="DD.MM.YYYY" pattern="^\d{2}\.\d{2}\.\d{4}$" required>
         </div>
         <div class="form-group" style="flex: 1;">
-          <label for="time">Time (HH:MM)</label>
+          <label for="time">Time</label>
           <input type="text" id="time" name="time" placeholder="HH:MM" pattern="^\d{2}:\d{2}$" required>
         </div>
       </div>
       
       <!-- Temperature: допускаются только цифры, точка и запятая -->
       <div class="form-group">
-        <label for="temperature">Temperature (Enter the temperature)</label>
-        <input type="text" id="temperature" name="temperature" placeholder="e.g. 36.6" pattern="^[\d\.,]+$" required>
+        <label for="temperature">Temperature</label>
+        <input type="text" id="temperature" name="temperature" placeholder="Enter the temperature" pattern="^[\d\.,]+$" required>
       </div>
       
       <!-- Working Hours: только цифры -->
@@ -164,7 +171,7 @@
       
       <!-- Reported By: имя -->
       <div class="form-group">
-        <label for="reportedBy">Reported by (Your name)</label>
+        <label for="reportedBy">Reported by</label>
         <input type="text" id="reportedBy" name="reportedBy" placeholder="Your name" required>
       </div>
       
