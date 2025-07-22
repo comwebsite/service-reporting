@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Service reporting</title>
+  <!-- Chart.js for interactive graph -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-page: #111;
+      --bg-form: #1a1a1a;
+      --bg-graph: #1a1a1a;
+      --text-main: #fff;
+      --accent-green: #28a745;
+      --accent-green-hover: #218838;
+      --border-default: #444;
+      --border-focus: #fff;
+      --shadow: rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-page);
+      color: var(--text-main);
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+    }
+
+    form {
+      background: var(--bg-form);
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    h1, .graph-container h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .field {
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.6rem;
+      background: transparent;
+      border: 1px solid var(--border-default);
+      border-radius: 4px;
+      color: var(--text-main);
+      font-size: 1rem;
+      transition: border 0.3s, box-shadow 0.3s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 5px var(--shadow);
+    }
+
+    input::placeholder {
+      color: rgba(255,255,255,0.4);
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 0.8rem;
+      margin-top: 0.5rem;
+      background: var(--accent-green);
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    button:hover {
+      background: var(--accent-green-hover);
+      box-shadow: 0 0 10px var(--shadow);
+    }
+
+    #error {
+      color: #ff6b6b;
+      min-height: 1.2em;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .graph-container {
+      background: var(--bg-graph);
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px var(--shadow);
+    }
+
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 1rem 0;
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-main);
+    }
+
+    @media (max-width: 480px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <form id="reportForm" data-ajax="true">
+      <h1>Service reporting</h1>
+      <div id="error"></div>
+
+      <div class="row">
+        <div class="field">
+          <label for="date">Date</label>
+          <input
+            type="text"
+            id="date"
+            name="Date"
+            placeholder="DD.MM.YYYY"
+            required
+            pattern="\d{2}\.\d{2}\.\d{4}"
+          />
+        </div>
+        <div class="field">
+          <label for="time">Time</label>
+          <input
+            type="text"
+            id="time"
+            name="Time"
+            placeholder="HH:MM"
+            required
+            pattern="\d{2}:\d{2}"
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="temp">Temperature</label>
+        <input
+          type="text"
+          id="temp"
+          name="Temperature"
+          placeholder="Enter the temperature"
+          required
+          pattern="[\d.,]+"
+        />
+      </div>
+
+      <div class="field">
+        <label for="hours">Working hours</label>
+        <input
+          type="text"
+          id="hours"
+          name="Working hours"
+          placeholder="Enter hours"
+          required
+          pattern="\d+"
+        />
+      </div>
+
+      <div class="field">
+        <label for="difficulty">Work difficulty</label>
+        <select id="difficulty" name="Work difficulty" required>
+          <option value="">Select difficulty</option>
+          <option>Neutral</option>
+          <option>Easy</option>
+          <option>Moderate</option>
+          <option>Hard</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="shift">Shift type</label>
+        <select id="shift" name="Shift type" required>
+          <option value="">Select shift</option>
+          <option>Day</option>
+          <option>Night</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="reported">Reported by</label>
+        <input
+          type="text"
+          id="reported"
+          name="Reported by"
+          placeholder="Your name"
+          required
+        />
+      </div>
+
+      <!-- FormSubmit config -->
+      <input type="hidden" name="_subject" value="New Service Report" />
+      <input type="hidden" name="_autoresponse" value="Thank you for your report!" />
+      <input type="hidden" name="_next" value="https://formsubmit.co/thank-you" />
+
+      <button type="submit">Submit report</button>
+    </form>
+
+    <div class="graph-container">
+      <h2>Reports Overview</h2>
+      <canvas id="reportChart"></canvas>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 Service reporting. All rights reserved.
+  </footer>
+
+  <script>
+    // Live input filtering
+    const filters = [
+      { el: "date", regex: /[^\d.]/g },
+      { el: "time", regex: /[^\d:]/g },
+      { el: "temp", regex: /[^\d.,]/g },
+      { el: "hours", regex: /[^\d]/g }
+    ];
+    filters.forEach(({ el, regex }) => {
+      document.getElementById(el).addEventListener("input", e => {
+        e.target.value = e.target.value.replace(regex, "");
+      });
+    });
+
+    // AJAX form submit via FormSubmit
+    const form = document.getElementById("reportForm");
+    const errorDiv = document.getElementById("error");
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      errorDiv.textContent = "";
+      if (!form.checkValidity()) {
+        errorDiv.textContent = "Please fill out all fields correctly.";
+        return;
+      }
+      const data = new FormData(form);
+      try {
+        const res = await fetch("https://formsubmit.co/ajax/pasa79427@gmail.com", {
+          method: "POST",
+          body: data,
+          headers: { Accept: "application/json" }
+        });
+        const json = await res.json();
+        if (json.success === "true") {
+          form.reset();
+          updateChart();
+          alert("Report sent successfully!");
+        } else {
+          throw new Error();
+        }
+      } catch {
+        errorDiv.textContent = "Error sending report. Please try again.";
+      }
+    });
+
+    // Chart.js setup
+    const ctx = document.getElementById("reportChart").getContext("2d");
+    const chartData = {
+      labels: [],
+      datasets: [{
+        label: "Reports",
+        data: [],
+        borderColor: "var(--accent-green)",
+        backgroundColor: "rgba(40,167,69,0.2)",
+        tension: 0.3
+      }]
+    };
+    const reportChart = new Chart(ctx, {
+      type: "line",
+      data: chartData,
+      options: {
+        scales: {
+          x: { grid: { color: varString("--border-default") }, ticks: { color: varString("--text-main") } },
+          y: { grid: { color: varString("--border-default") }, beginAtZero: true, ticks: { color: varString("--text-main") } }
+        },
+        plugins: {
+          legend: { labels: { color: varString("--text-main") } }
+        }
+      }
+    });
+
+    function updateChart() {
+      const now = new Date();
+      const label = now.getHours().toString().padStart(2, '0') + ':' +
+                    now.getMinutes().toString().padStart(2, '0');
+      chartData.labels.push(label);
+      chartData.datasets[0].data.push(1);
+      if (chartData.labels.length > 12) {
+        chartData.labels.shift();
+        chartData.datasets[0].data.shift();
+      }
+      reportChart.update();
+    }
+
+    function varString(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+  </script>
+</body>
+</html>
