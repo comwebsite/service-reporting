@@ -4,254 +4,339 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Service reporting</title>
+  <!-- Chart.js for interactive graph -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* Reset & Base */
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-page: #111;
+      --bg-form: #1a1a1a;
+      --bg-graph: #1a1a1a;
+      --text-main: #fff;
+      --accent-green: #28a745;
+      --accent-green-hover: #218838;
+      --border-default: #444;
+      --border-focus: #fff;
+      --shadow: rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
+      background: var(--bg-page);
+      color: var(--text-main);
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background: #f0f2f5;
-    }
-    /* Centered main area */
-    .main-content {
-      flex: 1;
-      display: flex;
       align-items: center;
-      justify-content: center;
       padding: 1rem;
     }
-    /* Form container */
+
     .container {
-      background: #fff;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
       width: 100%;
-      max-width: 470px;
-      animation: fadeInUp 0.6s ease-out both;
+      max-width: 500px;
     }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
+
+    form {
+      background: var(--bg-form);
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px var(--shadow);
+      margin-bottom: 2rem;
     }
-    h1 {
+
+    h1, .graph-container h2 {
       text-align: center;
-      margin-bottom: 1.5rem;
-      font-size: 1.6rem;
-      color: #333;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
     }
+
     .row {
-      display: flex;
-      gap: 0.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
     }
-    .row .field {
-      flex: 1 1 0;
-      min-width: 0;
-    }
+
     .field {
-      margin-top: 1rem;
-      display: flex;
-      flex-direction: column;
+      margin-bottom: 1rem;
     }
-    /* Darker label text */
+
     label {
+      display: block;
       margin-bottom: 0.3rem;
-      color: #333;
       font-size: 0.9rem;
     }
+
     input, select {
       width: 100%;
-      padding: 0.6rem 0.8rem;
-      border: 2px solid #ddd;
-      border-radius: 6px;
+      padding: 0.6rem;
+      background: transparent;
+      border: 1px solid var(--border-default);
+      border-radius: 4px;
+      color: var(--text-main);
       font-size: 1rem;
-      transition: border-color 0.3s, box-shadow 0.3s;
+      transition: border 0.3s, box-shadow 0.3s;
     }
+
     input:focus, select:focus {
       outline: none;
-      border-color: #000;
-      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+      border-color: var(--border-focus);
+      box-shadow: 0 0 5px var(--shadow);
     }
+
+    input::placeholder {
+      color: rgba(255,255,255,0.4);
+    }
+
     button {
-      margin-top: 1.5rem;
+      display: block;
       width: 100%;
-      padding: 0.75rem;
-      background: #4CAF50;
+      padding: 0.8rem;
+      margin-top: 0.5rem;
+      background: var(--accent-green);
       border: none;
-      border-radius: 6px;
+      border-radius: 4px;
       color: #fff;
       font-size: 1rem;
       cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
+      transition: background 0.3s, box-shadow 0.3s;
     }
+
     button:hover {
-      background: #45a049;
-      transform: translateY(-2px);
+      background: var(--accent-green-hover);
+      box-shadow: 0 0 10px var(--shadow);
     }
-    button:active {
-      transform: translateY(0);
-    }
-    #message {
-      margin-top: 1rem;
-      font-size: 0.95rem;
+
+    #error {
+      color: #ff6b6b;
+      min-height: 1.2em;
       text-align: center;
+      margin-bottom: 1rem;
     }
-    /* Footer at bottom */
+
+    .graph-container {
+      background: var(--bg-graph);
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px var(--shadow);
+    }
+
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+
     footer {
+      margin-top: auto;
+      padding: 1rem 0;
+      width: 100%;
+      max-width: 600px;
       text-align: center;
-      padding: 0.75rem 1rem;
-      background: #fff;
-      color: #777;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
+      color: var(--text-main);
     }
-    /* Mobile tweaks */
-    @media (max-width: 360px) {
-      .container { padding: 1.5rem; }
-      button { font-size: 0.9rem; }
+
+    @media (max-width: 480px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="main-content">
-    <div class="container">
+  <div class="container">
+    <form id="reportForm" data-ajax="true">
       <h1>Service reporting</h1>
-      <form
-        id="reportForm"
-        action="https://formsubmit.co/pasa79427@gmail.com"
-        method="POST"
-        novalidate
-      >
-        <!-- formsubmit settings -->
-        <input type="hidden" name="_captcha" value="false" />
-        <input type="hidden" name="_subject" value="New Service Report" />
+      <div id="error"></div>
 
-        <!-- Date & Time -->
-        <div class="row">
-          <div class="field">
-            <label for="date">Date</label>
-            <input
-              id="date"
-              name="Date"
-              type="text"
-              placeholder="DD.MM.YYYY"
-              pattern="\d{2}\.\d{2}\.\d{4}"
-              title="Format DD.MM.YYYY"
-              required
-            />
-          </div>
-          <div class="field">
-            <label for="time">Time</label>
-            <input
-              id="time"
-              name="Time"
-              type="text"
-              placeholder="HH:MM"
-              pattern="\d{2}:\d{2}"
-              title="Format HH:MM"
-              required
-            />
-          </div>
-        </div>
-
-        <!-- Temperature -->
+      <div class="row">
         <div class="field">
-          <label for="temp">Temperature</label>
+          <label for="date">Date</label>
           <input
-            id="temp"
-            name="Temperature"
             type="text"
-            placeholder="Enter the temperature."
-            pattern="[0-9.,]+"
-            title="Only digits, dots and commas allowed"
+            id="date"
+            name="Date"
+            placeholder="DD.MM.YYYY"
             required
+            pattern="\d{2}\.\d{2}\.\d{4}"
           />
         </div>
-
-        <!-- Working Hours -->
         <div class="field">
-          <label for="hours">Working hours</label>
+          <label for="time">Time</label>
           <input
-            id="hours"
-            name="Working hours"
             type="text"
-            placeholder="Enter hours"
-            pattern="\d+"
-            title="Only digits allowed"
+            id="time"
+            name="Time"
+            placeholder="HH:MM"
             required
+            pattern="\d{2}:\d{2}"
           />
         </div>
+      </div>
 
-        <!-- Work Difficulty -->
-        <div class="field">
-          <label for="difficulty">Work difficulty</label>
-          <select id="difficulty" name="Work difficulty" required>
-            <option value="" disabled selected>Select the work difficulty</option>
-            <option>Neutral</option>
-            <option>Easy</option>
-            <option>Moderate</option>
-            <option>Hard</option>
-          </select>
-        </div>
+      <div class="field">
+        <label for="temp">Temperature</label>
+        <input
+          type="text"
+          id="temp"
+          name="Temperature"
+          placeholder="Enter the temperature"
+          required
+          pattern="[\d.,]+"
+        />
+      </div>
 
-        <!-- Shift Type -->
-        <div class="field">
-          <label for="shift">Shift type</label>
-          <select id="shift" name="Shift type" required>
-            <option value="" disabled selected>Select shift type</option>
-            <option>Day</option>
-            <option>Night</option>
-          </select>
-        </div>
+      <div class="field">
+        <label for="hours">Working hours</label>
+        <input
+          type="text"
+          id="hours"
+          name="Working hours"
+          placeholder="Enter hours"
+          required
+          pattern="\d+"
+        />
+      </div>
 
-        <!-- Reported By -->
-        <div class="field">
-          <label for="reported">Reported by</label>
-          <input
-            id="reported"
-            name="Reported by"
-            type="text"
-            placeholder="Your name"
-            required
-          />
-        </div>
+      <div class="field">
+        <label for="difficulty">Work difficulty</label>
+        <select id="difficulty" name="Work difficulty" required>
+          <option value="">Select difficulty</option>
+          <option>Neutral</option>
+          <option>Easy</option>
+          <option>Moderate</option>
+          <option>Hard</option>
+        </select>
+      </div>
 
-        <button type="submit">Submit report</button>
-        <div id="message"></div>
-      </form>
+      <div class="field">
+        <label for="shift">Shift type</label>
+        <select id="shift" name="Shift type" required>
+          <option value="">Select shift</option>
+          <option>Day</option>
+          <option>Night</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="reported">Reported by</label>
+        <input
+          type="text"
+          id="reported"
+          name="Reported by"
+          placeholder="Your name"
+          required
+        />
+      </div>
+
+      <!-- FormSubmit config -->
+      <input type="hidden" name="_subject" value="New Service Report" />
+      <input type="hidden" name="_autoresponse" value="Thank you for your report!" />
+      <input type="hidden" name="_next" value="https://formsubmit.co/thank-you" />
+
+      <button type="submit">Submit report</button>
+    </form>
+
+    <div class="graph-container">
+      <h2>Reports Overview</h2>
+      <canvas id="reportChart"></canvas>
     </div>
-  </main>
-  <footer>© Все права защищены.</footer>
+  </div>
+
+  <footer>
+    © 2025 Service reporting. All rights reserved.
+  </footer>
 
   <script>
-    const form = document.getElementById("reportForm");
-    const msg  = document.getElementById("message");
+    // Live input filtering
+    const filters = [
+      { el: "date", regex: /[^\d.]/g },
+      { el: "time", regex: /[^\d:]/g },
+      { el: "temp", regex: /[^\d.,]/g },
+      { el: "hours", regex: /[^\d]/g }
+    ];
+    filters.forEach(({ el, regex }) => {
+      document.getElementById(el).addEventListener("input", e => {
+        e.target.value = e.target.value.replace(regex, "");
+      });
+    });
 
+    // AJAX form submit via FormSubmit
+    const form = document.getElementById("reportForm");
+    const errorDiv = document.getElementById("error");
     form.addEventListener("submit", async e => {
       e.preventDefault();
-      msg.textContent = "";
-
+      errorDiv.textContent = "";
       if (!form.checkValidity()) {
-        form.reportValidity();
+        errorDiv.textContent = "Please fill out all fields correctly.";
         return;
       }
-
+      const data = new FormData(form);
       try {
-        const res = await fetch(form.action, {
+        const res = await fetch("https://formsubmit.co/ajax/pasa79427@gmail.com", {
           method: "POST",
-          body: new FormData(form)
+          body: data,
+          headers: { Accept: "application/json" }
         });
-        if (!res.ok) throw new Error("Network error");
-
-        msg.style.color = "green";
-        msg.textContent = "Report sent successfully!";
-        form.reset();
+        const json = await res.json();
+        if (json.success === "true") {
+          form.reset();
+          updateChart();
+          alert("Report sent successfully!");
+        } else {
+          throw new Error();
+        }
       } catch {
-        msg.style.color = "red";
-        msg.textContent = "Error sending report. Try again.";
+        errorDiv.textContent = "Error sending report. Please try again.";
       }
     });
+
+    // Chart.js setup
+    const ctx = document.getElementById("reportChart").getContext("2d");
+    const chartData = {
+      labels: [],
+      datasets: [{
+        label: "Reports",
+        data: [],
+        borderColor: "var(--accent-green)",
+        backgroundColor: "rgba(40,167,69,0.2)",
+        tension: 0.3
+      }]
+    };
+    const reportChart = new Chart(ctx, {
+      type: "line",
+      data: chartData,
+      options: {
+        scales: {
+          x: { grid: { color: varString("--border-default") }, ticks: { color: varString("--text-main") } },
+          y: { grid: { color: varString("--border-default") }, beginAtZero: true, ticks: { color: varString("--text-main") } }
+        },
+        plugins: {
+          legend: { labels: { color: varString("--text-main") } }
+        }
+      }
+    });
+
+    function updateChart() {
+      const now = new Date();
+      const label = now.getHours().toString().padStart(2, '0') + ':' +
+                    now.getMinutes().toString().padStart(2, '0');
+      chartData.labels.push(label);
+      chartData.datasets[0].data.push(1);
+      if (chartData.labels.length > 12) {
+        chartData.labels.shift();
+        chartData.datasets[0].data.shift();
+      }
+      reportChart.update();
+    }
+
+    function varString(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
   </script>
 </body>
 </html>
