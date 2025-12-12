@@ -4,236 +4,470 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Service Reporting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#f5f7fb;
-  --card:#ffffff;
-  --text:#0b1b2b;
-  --muted:#6b7785;
-  --accent:#2b7cff;
-  --accent-2:#7c5cff;
-  --field-h:56px;
-  --radius:12px;
-  --shadow: 0 10px 30px rgba(15,23,42,0.06);
-}
-*{box-sizing:border-box;font-family:Inter,Segoe UI,system-ui,Arial; -webkit-font-smoothing:antialiased;}
-html,body{height:100%;margin:0;background:var(--bg);color:var(--text);}
-.wrapper{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;}
-.container{width:100%;max-width:720px;background:var(--card);border-radius:16px;padding:22px;border:1px solid rgba(11,27,43,0.04);box-shadow:var(--shadow);}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:12px;}
-.title{font-size:20px;font-weight:700;}
-.version{font-size:12px;color:var(--muted);background:rgba(43,124,255,0.06);padding:6px 10px;border-radius:999px;border:1px solid rgba(43,124,255,0.08);}
-.form-grid{display:flex;flex-direction:column;gap:12px;}
-.field{display:flex;flex-direction:column;}
-label{font-size:13px;color:var(--muted);margin-bottom:8px;}
-.input,select,button{height:var(--field-h);width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(11,27,43,0.06);background:transparent;color:var(--text);font-size:15px;outline:none;transition:all .14s ease;}
-.input:focus,select:focus{box-shadow:0 10px 30px rgba(43,124,255,0.08);border-color:var(--accent);}
-.row{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;}
-.col{flex:1;min-width:180px;}
-.picker-wrapper{position:relative;border-radius:10px;overflow:hidden;}
-.native-picker{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border-radius:inherit;border:none;background:transparent;}
-.display-field{pointer-events:none;background:transparent;}
-/* hide default spin/clear icons where possible */
-input::-webkit-clear-button, input::-webkit-inner-spin-button, input::-webkit-outer-spin-button {display:none;}
-input::-ms-clear, input::-ms-expand {display:none;}
-.error{color:#d23b3b;font-size:13px;margin-top:6px;opacity:0;transform:translateY(-6px);transition:all .14s;}
-.invalid{border-color:#d23b3b !important;box-shadow:0 8px 20px rgba(210,59,59,0.06);}
-.shake{animation:shake .36s}
-@keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}100%{transform:translateX(0)}}
-/* Submit button improved */
-.submit{height:56px;background:linear-gradient(90deg,var(--accent),var(--accent-2));border:none;color:#fff;font-weight:700;border-radius:12px;cursor:pointer;font-size:16px;transition:transform .12s,box-shadow .12s;box-shadow:0 10px 30px rgba(43,124,255,0.12);width:100%;}
-.submit:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(43,124,255,0.14);}
-.submit:focus{outline:3px solid rgba(43,124,255,0.12);outline-offset:3px;}
-.note{font-size:12px;color:var(--muted);margin-top:10px;text-align:center;}
-/* responsive */
-@media(max-width:640px){
-  .row{flex-direction:column;}
-  .header{flex-direction:column;align-items:flex-start;gap:8px;}
-}
+  :root{
+    --bg:#ffffff;
+    --glass-bg: rgba(255,255,255,0.55);
+    --glass-border: rgba(255,255,255,0.6);
+    --accent: #4b8cff;
+    --muted: #6b7280;
+    --shadow: 0 8px 30px rgba(16,24,40,0.08);
+    --radius: 16px;
+  }
+  html,body{
+    height:100%;
+    margin:0;
+    font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+    background: linear-gradient(180deg,#fbfdff 0%, #ffffff 100%);
+    color:#0f172a;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+
+  /* Page layout */
+  .wrap{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:48px 20px;
+    box-sizing:border-box;
+  }
+
+  /* Card with glassmorphism */
+  .card{
+    width:100%;
+    max-width:600px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.55));
+    border-radius:var(--radius);
+    padding:28px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    position:relative;
+    overflow:hidden;
+    transition:transform .45s cubic-bezier(.2,.9,.2,1), box-shadow .3s;
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    inset: -40% -20% auto -20%;
+    height:220px;
+    background: radial-gradient(600px 200px at 10% 10%, rgba(75,140,255,0.08), transparent 20%),
+                radial-gradient(400px 120px at 90% 80%, rgba(75,140,255,0.06), transparent 20%);
+    transform: rotate(-6deg);
+    pointer-events:none;
+  }
+  .card:hover{ transform: translateY(-6px); box-shadow: 0 20px 50px rgba(16,24,40,0.12); }
+
+  header.title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:18px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .logo{
+    width:56px;
+    height:56px;
+    border-radius:12px;
+    background: linear-gradient(135deg,var(--accent), #7dd3fc);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    font-weight:800;
+    box-shadow: 0 6px 18px rgba(75,140,255,0.18);
+  }
+  h1{ font-size:20px; margin:0; letter-spacing:-0.2px; }
+  p.lead{ margin:0; color:var(--muted); font-size:13px; }
+
+  form{
+    margin-top:12px;
+    display:grid;
+    gap:14px;
+  }
+
+  /* Row with two items (Date and Time) */
+  .row{
+    display:flex;
+    gap:12px;
+    align-items:stretch;
+  }
+  .field{
+    flex:1;
+    background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.45));
+    border-radius:12px;
+    padding:12px;
+    border:1px solid rgba(15,23,42,0.04);
+    box-shadow: 0 6px 18px rgba(12,18,30,0.03) inset;
+    transition: transform .18s ease, box-shadow .18s ease;
+    display:flex;
+    flex-direction:column;
+  }
+  .field:focus-within{ transform: translateY(-4px); box-shadow: 0 12px 30px rgba(75,140,255,0.06); }
+
+  label{
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:8px;
+    display:block;
+  }
+  input[type="text"], input[type="number"], select{
+    border:0;
+    outline:0;
+    background:transparent;
+    font-size:16px;
+    color: #071033;
+    padding:6px 0;
+    width:100%;
+  }
+  input[readonly]{ color:#334155; font-weight:600; }
+
+  /* Single column fields */
+  .col{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:12px;
+  }
+
+  /* Submit area */
+  .actions{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:6px;
+  }
+  .btn{
+    background: linear-gradient(90deg,var(--accent), #7dd3fc);
+    color:white;
+    border:0;
+    padding:10px 16px;
+    border-radius:12px;
+    font-weight:600;
+    cursor:pointer;
+    box-shadow: 0 10px 30px rgba(75,140,255,0.18);
+    transition: transform .18s ease, box-shadow .18s ease, opacity .12s;
+  }
+  .btn:active{ transform: translateY(1px) scale(.998); }
+  .btn.secondary{
+    background:transparent;
+    color:var(--accent);
+    border:1px solid rgba(75,140,255,0.12);
+    box-shadow:none;
+  }
+
+  .note{ color:var(--muted); font-size:13px; }
+
+  /* small helper text and errors */
+  .error{ color:#ef4444; font-size:13px; display:none; margin-top:6px; }
+  .success{ color:#059669; font-size:13px; display:none; margin-top:6px; }
+
+  footer{
+    margin-top:18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    color:var(--muted);
+    font-size:13px;
+  }
+
+  /* subtle floating animation for inputs */
+  @keyframes floaty {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+    100% { transform: translateY(0px); }
+  }
+  .logo{ animation: floaty 6s ease-in-out infinite; }
+
+  /* Responsive */
+  @media (max-width:720px){
+    .row{ flex-direction:column; }
+    .actions{ flex-direction:column; align-items:stretch; }
+  }
 </style>
 </head>
 <body>
-<div class="wrapper">
-  <div class="container" role="main" aria-labelledby="formTitle">
-    <div class="header">
-      <div id="formTitle" class="title">Service Reporting</div>
-      <div class="version">version 3.1.1</div>
-    </div>
-
-    <form id="reportForm" class="form-grid" action="https://formsubmit.co/communityofdevelopingcraftsmen@gmail.com" method="POST" autocomplete="off" novalidate>
-      <input type="hidden" name="_captcha" value="false">
-      <input type="hidden" name="_subject" value="Service Report">
-
-      <div class="row">
-        <div class="col field">
-          <label for="dateDisplay">Date</label>
-          <div class="picker-wrapper">
-            <input id="dateDisplay" class="input display-field" readonly aria-readonly="true" />
-            <input id="datePicker" class="native-picker" type="date" name="Date" required />
+  <div class="wrap">
+    <main class="card" role="main" aria-labelledby="title">
+      <header class="title">
+        <div class="brand">
+          <div class="logo">SR</div>
+          <div>
+            <h1 id="title">Service Reporting</h1>
+            <p class="lead">Quick daily report — version 4.0</p>
           </div>
-          <div id="dateError" class="error">Пожалуйста, выберите дату</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:12px;color:var(--muted)">Clean glass UI • animated</div>
+          <div style="font-size:12px;color:var(--muted)">White theme</div>
+        </div>
+      </header>
+
+      <form id="reportForm" autocomplete="off">
+        <!-- Row 1: Date and Time (in one line) -->
+        <div class="row">
+          <div class="field">
+            <label for="date">Date</label>
+            <input id="date" name="Date" type="text" readonly />
+          </div>
+          <div class="field">
+            <label for="time">Time</label>
+            <input id="time" name="Time" type="text" readonly />
+          </div>
         </div>
 
-        <div class="col field">
-          <label for="timeDisplay">Time</label>
-          <div class="picker-wrapper">
-            <input id="timeDisplay" class="input display-field" readonly aria-readonly="true" />
-            <input id="timePicker" class="native-picker" type="time" name="Time" required />
+        <!-- Row 2: Temperature -->
+        <div class="col">
+          <div class="field">
+            <label for="temperature">Temperature</label>
+            <input id="temperature" name="Temperature" type="text"
+              placeholder="e.g. 23.5 or +5, -2"
+              inputmode="decimal"
+              pattern="^[0-9\+\-\,\.]+$"
+              title="Только цифры и символы , . + -"
+              required />
+            
           </div>
-          <div id="timeError" class="error">Пожалуйста, выберите время</div>
         </div>
-      </div>
 
-      <div class="field">
-        <label for="temperature">Temperature</label>
-        <input id="temperature" name="Temperature" class="input" placeholder="e.g. 23.5" inputmode="decimal" required />
-        <div id="tempError" class="error">Только числа; допустимы . и ,</div>
-      </div>
+        <!-- Row 3: Working hours -->
+        <div class="col">
+          <div class="field">
+            <label for="hours">Working hours</label>
+            <input id="hours" name="WorkingHours" type="text"
+              placeholder="e.g. 8 or 8.5 or 08:30"
+              inputmode="numeric"
+              pattern="^[0-9\.\,\:\;]+$"
+              title="Только цифры и символы . , : ;"
+              required />
+           
+          </div>
+        </div>
 
-      <div class="field">
-        <label for="hours">Working hours</label>
-        <input id="hours" name="WorkingHours" class="input" placeholder="e.g. 8 or 8:30" inputmode="numeric" required />
-        <div id="hoursError" class="error">Только цифры и двоеточие</div>
-      </div>
+        <!-- Row 4: How many people have you helped -->
+        <div class="col">
+          <div class="field">
+            <label for="helped">How many people have you helped</label>
+            <input id="helped" name="HelpedCount" type="text"
+              placeholder="e.g. 3"
+              inputmode="numeric"
+              pattern="^[0-9]+$"
+              title="Только целое число"
+              required />
+            
+          </div>
+        </div>
 
-      <div class="field">
-        <label for="helped">How many people have you helped</label>
-        <input id="helped" name="Helped" class="input" inputmode="numeric" placeholder="e.g. 3" required />
-        <div id="helpedError" class="error">Только целое число</div>
-      </div>
+        <!-- Row 5: Work difficulty -->
+        <div class="col">
+          <div class="field">
+            <label for="difficulty">Work difficulty</label>
+            <select id="difficulty" name="WorkDifficulty" required>
+              <option value="">-- Выберите --</option>
+              <option value="Neutral">Neutral</option>
+              <option value="Moderate">Moderate</option>
+              <option value="Hard">Hard</option>
+            </select>
+            
+          </div>
+        </div>
 
-      <div class="field">
-        <label for="difficulty">Work difficulty</label>
-        <select id="difficulty" name="WorkDifficulty" class="input" required>
-          <option value="">Выберите</option>
-          <option>Neutral</option>
-          <option>Easy</option>
-          <option>Moderate</option>
-          <option>Hard</option>
-        </select>
-        <div id="diffError" class="error">Выберите уровень</div>
-      </div>
+        <!-- Row 6: Reported by -->
+        <div class="col">
+          <div class="field">
+            <label for="reportedBy">Reported by</label>
+            <input id="reportedBy" name="ReportedBy" type="text"
+              placeholder="Ваше имя"
+              pattern="^[A-Za-zА-Яа-яЁё\s\-\']+$"
+              title="Только буквы, пробелы, дефис или апостроф"
+              required />
+         
+          </div>
+        </div>
 
-      <div class="field">
-        <label for="shift">Shift type</label>
-        <select id="shift" name="ShiftType" class="input" required>
-          <option value="">Выберите</option>
-          <option>Day</option>
-          <option>Night</option>
-        </select>
-        <div id="shiftError" class="error">Выберите смену</div>
-      </div>
+        <!-- Hidden fields for FormSubmit -->
+        <input type="hidden" name="_subject" value="Service Reporting Form Submission">
+        <input type="hidden" name="_next" value="">
+        <input type="hidden" name="_captcha" value="false">
 
-      <div class="field">
-        <label for="reported">Reported by</label>
-        <input id="reported" name="ReportedBy" class="input" placeholder="Имя" inputmode="text" required />
-        <div id="repError" class="error">Введите только имя (латиница или кириллица)</div>
-      </div>
+        <div class="actions">
+          <div>
+            <button type="submit" class="btn">Submit</button>
+            <button type="button" id="resetBtn" class="btn secondary">Reset</button>
+          </div>
+          <div style="text-align:right">
+            <div id="status" class="note">Готово к отправке</div>
+            <div id="error" class="error"></div>
+            <div id="success" class="success"></div>
+          </div>
+        </div>
+      </form>
 
-      <button type="submit" class="submit">Submit</button>
-      <div class="note">by vertex dynamics</div>
-    </form>
+      <footer>
+        <div>© Service Reporting</div>
+        <div>version 4.0</div>
+      </footer>
+    </main>
   </div>
-</div>
 
 <script>
-/* Formatting helpers */
-const pad = n => n.toString().padStart(2,'0');
-const formatDate = d => `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}`;
-const formatTime = d => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  // --- Utilities ---
+  const $ = (sel) => document.querySelector(sel);
 
-/* Elements */
-const datePicker = document.getElementById('datePicker');
-const dateDisplay = document.getElementById('dateDisplay');
-const timePicker = document.getElementById('timePicker');
-const timeDisplay = document.getElementById('timeDisplay');
-
-document.addEventListener('DOMContentLoaded', () => {
-  const now = new Date();
-  // set native pickers to now (with fallback)
-  try { datePicker.valueAsDate = now; } catch(e){
-    const y = now.getFullYear(), m = pad(now.getMonth()+1), d = pad(now.getDate());
-    datePicker.value = `${y}-${m}-${d}`;
+  // Set date and time initially and keep time updated
+  function pad(n){ return n<10? '0'+n : n; }
+  function updateDateTime(){
+    const now = new Date();
+    const dateStr = now.toLocaleDateString(undefined, {year:'numeric', month:'2-digit', day:'2-digit'});
+    const timeStr = now.toLocaleTimeString(undefined, {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+    $('#date').value = dateStr;
+    $('#time').value = timeStr;
   }
-  timePicker.value = formatTime(now);
-  dateDisplay.value = formatDate(now);
-  timeDisplay.value = timePicker.value;
-});
+  updateDateTime();
+  setInterval(updateDateTime, 1000);
 
-/* Sync display when native pickers change */
-datePicker.addEventListener('input', () => {
-  if (!datePicker.value) { dateDisplay.value = ''; return; }
-  const parts = datePicker.value.split('-');
-  if (parts.length === 3) {
-    const [y,m,d] = parts;
-    dateDisplay.value = `${pad(Number(d))}.${pad(Number(m))}.${y}`;
-  } else {
-    dateDisplay.value = datePicker.value;
+  // Form validation helpers
+  function matchesPattern(el){
+    const pat = el.getAttribute('pattern');
+    if(!pat) return true;
+    const re = new RegExp(pat);
+    return re.test(el.value.trim());
   }
-});
-timePicker.addEventListener('input', () => {
-  timeDisplay.value = timePicker.value || '';
-});
 
-/* Validation */
-const form = document.getElementById('reportForm');
-const patterns = {
-  temp: /^[0-9]+([.,][0-9]+)?$/,
-  hours: /^[0-9]+(:[0-9]{1,2})?$/,
-  helped: /^\d+$/,
-  name: /^[A-Za-zА-Яа-яЁё]+$/
-};
+  function showError(msg){
+    const e = $('#error');
+    e.textContent = msg;
+    e.style.display = msg ? 'block' : 'none';
+  }
+  function showSuccess(msg){
+    const s = $('#success');
+    s.textContent = msg;
+    s.style.display = msg ? 'block' : 'none';
+  }
 
-function showError(el, msgId){
-  const err = document.getElementById(msgId);
-  if(err) err.style.opacity = 1;
-  el.classList.add('invalid','shake');
-  setTimeout(()=>el.classList.remove('shake'),360);
-}
-function hideError(el,msgId){
-  const err = document.getElementById(msgId);
-  if(err) err.style.opacity = 0;
-  el.classList.remove('invalid');
-}
+  // Reset button
+  $('#resetBtn').addEventListener('click', () => {
+    $('#reportForm').reset();
+    updateDateTime();
+    showError('');
+    showSuccess('');
+    $('#status').textContent = 'Форма очищена';
+    setTimeout(()=> $('#status').textContent = 'Готово к отправке', 1800);
+  });
 
-form.addEventListener('submit', (e) => {
-  let ok = true;
-  // date/time
-  if(!datePicker.value){ showError(dateDisplay,'dateError'); ok=false } else hideError(dateDisplay,'dateError');
-  if(!timePicker.value){ showError(timeDisplay,'timeError'); ok=false } else hideError(timeDisplay,'timeError');
+  // Modern FormSubmit AJAX endpoint
+  // Using FormSubmit AJAX: https://formsubmit.co/ajax/<email>
+  const endpoint = 'https://formsubmit.co/ajax/communityofdevelopingcraftsmen@gmail.com';
 
-  // temperature
-  const temp = document.getElementById('temperature');
-  if(!temp || !patterns.temp.test(temp.value.trim())){ showError(temp,'tempError'); ok=false } else hideError(temp,'tempError');
-
-  // hours
-  const hours = document.getElementById('hours');
-  if(!hours || !patterns.hours.test(hours.value.trim())){ showError(hours,'hoursError'); ok=false } else hideError(hours,'hoursError');
-
-  // helped
-  const helped = document.getElementById('helped');
-  if(!helped || !patterns.helped.test(helped.value.trim())){ showError(helped,'helpedError'); ok=false } else hideError(helped,'helpedError');
-
-  // difficulty
-  const diff = document.getElementById('difficulty');
-  if(!diff || !diff.value){ showError(diff,'diffError'); ok=false } else hideError(diff,'diffError');
-
-  // shift
-  const shift = document.getElementById('shift');
-  if(!shift || !shift.value){ showError(shift,'shiftError'); ok=false } else hideError(shift,'shiftError');
-
-  // name
-  const rep = document.getElementById('reported');
-  if(!rep || !patterns.name.test(rep.value.trim())){ showError(rep,'repError'); ok=false } else hideError(rep,'repError');
-
-  if(!ok){
+  document.getElementById('reportForm').addEventListener('submit', async function(e){
     e.preventDefault();
-    const firstInvalid = document.querySelector('.invalid');
-    if(firstInvalid) firstInvalid.scrollIntoView({behavior:'smooth',block:'center'});
-    return false;
+    showError('');
+    showSuccess('');
+    $('#status').textContent = 'Проверка данных...';
+
+    // Basic validation per-field
+    const temp = $('#temperature');
+    const hours = $('#hours');
+    const helped = $('#helped');
+    const reportedBy = $('#reportedBy');
+    const difficulty = $('#difficulty');
+
+    if(!matchesPattern(temp) || temp.value.trim()===''){
+      showError('Поле Temperature: только цифры и символы , . + -');
+      temp.focus(); return;
+    }
+    if(!matchesPattern(hours) || hours.value.trim()===''){
+      showError('Поле Working hours: только цифры и символы . , : ;');
+      hours.focus(); return;
+    }
+    if(!matchesPattern(helped) || helped.value.trim()===''){
+      showError('Поле How many people have you helped: только целое число');
+      helped.focus(); return;
+    }
+    if(!difficulty.value){
+      showError('Выберите Work difficulty');
+      difficulty.focus(); return;
+    }
+    if(!matchesPattern(reportedBy) || reportedBy.value.trim()===''){
+      showError('Поле Reported by: только буквы и пробелы');
+      reportedBy.focus(); return;
+    }
+
+    // Prepare form data
+    const form = e.target;
+    const formData = new FormData(form);
+
+    // Add date/time values (they are readonly inputs already included)
+    formData.set('Date', $('#date').value);
+    formData.set('Time', $('#time').value);
+
+    // Set _next to a friendly message page (optional). We'll set to current location.
+    formData.set('_next', window.location.href);
+
+    $('#status').textContent = 'Отправка...';
+
+    try{
+      const resp = await fetch(endpoint, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      if(!resp.ok){
+        const text = await resp.text();
+        throw new Error('Ошибка отправки: ' + resp.status + ' ' + text);
+      }
+      const data = await resp.json();
+      // success
+      showSuccess('Форма успешно отправлена. Спасибо!');
+      $('#status').textContent = 'Отправлено';
+      // Optionally reset after success
+      setTimeout(()=> {
+        $('#reportForm').reset();
+        updateDateTime();
+        $('#status').textContent = 'Готово к отправке';
+      }, 1800);
+    }catch(err){
+      console.error(err);
+      showError('Не удалось отправить форму. Попробуйте ещё раз. ' + (err.message || ''));
+      $('#status').textContent = 'Ошибка';
+    }
+  });
+
+  // Extra: prevent letters on numeric-like fields while typing (UX)
+  function allowChars(el, allowedRegex){
+    el.addEventListener('input', () => {
+      const v = el.value;
+      const filtered = v.split('').filter(ch => allowedRegex.test(ch)).join('');
+      if(filtered !== v) el.value = filtered;
+    });
   }
-  // allow native submit to FormSubmit
-});
+  // Temperature: digits and , . + -
+  allowChars($('#temperature'), /[0-9\+\-\,\.]/);
+  // Hours: digits and . , : ;
+  allowChars($('#hours'), /[0-9\.\,\:\;]/);
+  // Helped: digits only
+  allowChars($('#helped'), /[0-9]/);
+  // ReportedBy: letters, spaces, hyphen, apostrophe (Cyrillic and Latin)
+  allowChars($('#reportedBy'), /[A-Za-zА-Яа-яЁё\s\-\']/);
+
+  // Accessibility: focus first input
+  window.addEventListener('load', ()=> {
+    $('#temperature').focus();
+  });
 </script>
 </body>
 </html>
