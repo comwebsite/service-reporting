@@ -3,31 +3,65 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Service Reporting</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<title>Service Reporting — v5.0</title>
+<meta name="description" content="Service Reporting — отчетный бланк, Liquid Glass UI, версия 5.0" />
 <style>
   :root{
-    --bg:#ffffff;
-    --glass-bg: rgba(255,255,255,0.55);
-    --glass-border: rgba(255,255,255,0.6);
-    --accent: #4b8cff;
-    --muted: #6b7280;
-    --shadow: 0 8px 30px rgba(16,24,40,0.08);
-    --radius: 16px;
+    --bg1: linear-gradient(135deg, rgba(20,30,60,1) 0%, rgba(40,20,70,1) 100%);
+    --glass: rgba(255,255,255,0.06);
+    --glass-2: rgba(255,255,255,0.08);
+    --accent: rgba(120,200,255,0.18);
+    --card-radius: 20px;
+    --cell-size: 160px; /* базовый квадрат для Date/Time */
+    --glass-border: rgba(255,255,255,0.12);
+    --text: #eaf6ff;
+    --muted: rgba(230,240,255,0.6);
+    --success: #7ef0a4;
+    --danger: #ff8b8b;
   }
+
+  /* Page background with animated blobs */
   html,body{
     height:100%;
     margin:0;
-    font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
-    background: linear-gradient(180deg,#fbfdff 0%, #ffffff 100%);
-    color:#0f172a;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: var(--bg1);
+    color:var(--text);
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
+    overflow-y:auto;
   }
 
-  /* Page layout */
+  .scene{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+    overflow:hidden;
+  }
+
+  .blob{
+    position:absolute;
+    filter: blur(40px) saturate(120%);
+    opacity:0.9;
+    mix-blend-mode:screen;
+    transform-origin:center;
+    animation: float 12s ease-in-out infinite;
+  }
+  .blob.b1{ width:520px;height:520px; left:-10%; top:-10%; background:radial-gradient(circle at 30% 30%, rgba(120,200,255,0.35), rgba(80,60,180,0.12)); animation-duration:18s;}
+  .blob.b2{ width:420px;height:420px; right:-8%; bottom:-6%; background:radial-gradient(circle at 70% 70%, rgba(255,160,200,0.22), rgba(200,80,160,0.08)); animation-duration:22s; animation-delay:2s;}
+  .blob.b3{ width:300px;height:300px; left:10%; bottom:10%; background:radial-gradient(circle at 50% 50%, rgba(120,255,200,0.18), rgba(40,120,120,0.06)); animation-duration:16s; animation-delay:4s;}
+
+  @keyframes float{
+    0%{ transform: translateY(0) rotate(0deg) scale(1); }
+    50%{ transform: translateY(-30px) rotate(6deg) scale(1.05); }
+    100%{ transform: translateY(0) rotate(0deg) scale(1); }
+  }
+
+  /* Center container */
   .wrap{
+    position:relative;
+    z-index:2;
     min-height:100vh;
     display:flex;
     align-items:center;
@@ -36,84 +70,118 @@
     box-sizing:border-box;
   }
 
-  /* Card with glassmorphism */
+  /* Glass card */
   .card{
     width:100%;
-    max-width:600px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.55));
-    border-radius:var(--radius);
+    max-width:700px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+    border-radius:var(--card-radius);
     padding:28px;
-    box-shadow: var(--shadow);
+    box-sizing:border-box;
+    backdrop-filter: blur(14px) saturate(120%);
+    -webkit-backdrop-filter: blur(14px) saturate(120%);
     border: 1px solid var(--glass-border);
-    backdrop-filter: blur(12px) saturate(120%);
-    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    box-shadow: 0 10px 40px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
     position:relative;
     overflow:hidden;
-    transition:transform .45s cubic-bezier(.2,.9,.2,1), box-shadow .3s;
+    transform: translateZ(0);
+    transition: transform .45s cubic-bezier(.2,.9,.2,1), box-shadow .45s;
   }
-  .card::before{
+
+  .card::after{
     content:"";
     position:absolute;
-    inset: -40% -20% auto -20%;
-    height:220px;
-    background: radial-gradient(600px 200px at 10% 10%, rgba(75,140,255,0.08), transparent 20%),
-                radial-gradient(400px 120px at 90% 80%, rgba(75,140,255,0.06), transparent 20%);
-    transform: rotate(-6deg);
+    inset:0;
     pointer-events:none;
+    background: linear-gradient(120deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+    mix-blend-mode:overlay;
   }
-  .card:hover{ transform: translateY(-6px); box-shadow: 0 20px 50px rgba(16,24,40,0.12); }
 
-  header.title{
+  .card:hover{
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 20px 60px rgba(2,6,23,0.75);
+  }
+
+  header{
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:12px;
     margin-bottom:18px;
   }
+
   .brand{
     display:flex;
-    align-items:center;
-    gap:12px;
-  }
-  .logo{
-    width:56px;
-    height:56px;
-    border-radius:12px;
-    background: linear-gradient(135deg,var(--accent), #7dd3fc);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:white;
-    font-weight:800;
-    box-shadow: 0 6px 18px rgba(75,140,255,0.18);
-  }
-  h1{ font-size:20px; margin:0; letter-spacing:-0.2px; }
-  p.lead{ margin:0; color:var(--muted); font-size:13px; }
-
-  form{
-    margin-top:12px;
-    display:grid;
     gap:14px;
+    align-items:center;
   }
 
-  /* Row with two items (Date and Time) */
-  .row{
-    display:flex;
-    gap:12px;
-    align-items:stretch;
+  .logo{
+    width:56px;height:56px;border-radius:12px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.06);
+    position:relative;
+    overflow:hidden;
   }
-  .field{
-    flex:1;
-    background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.45));
-    border-radius:12px;
-    padding:12px;
-    border:1px solid rgba(15,23,42,0.04);
-    box-shadow: 0 6px 18px rgba(12,18,30,0.03) inset;
-    transition: transform .18s ease, box-shadow .18s ease;
+  .logo::before{
+    content:"";
+    position:absolute; inset:0;
+    background: linear-gradient(60deg, rgba(120,200,255,0.18), rgba(255,160,200,0.12));
+    mix-blend-mode:screen;
+    transform: translateY(-20%);
+    animation: sheen 3.6s linear infinite;
+  }
+  @keyframes sheen{ 0%{transform:translateX(-120%)} 100%{transform:translateX(120%)} }
+
+  h1{ font-size:20px; margin:0; letter-spacing:0.2px; }
+  .meta{ font-size:12px; color:var(--muted); }
+
+  /* Form layout */
+  form{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:18px;
+    align-items:start;
+  }
+
+  .grid-row{
+    display:grid;
+    gap:12px;
+  }
+
+  /* Row 1: Date and Time in same row, equal width & height */
+  .row-datetime{
+    grid-template-columns: repeat(2, var(--cell-size));
+    grid-auto-rows: var(--cell-size);
+    justify-content:center;
+    gap:18px;
+    width:100%;
+    margin:0 auto;
+  }
+
+  /* Make sure on small screens they shrink but remain equal height */
+  @media (max-width:520px){
+    :root{ --cell-size: 120px; }
+    .row-datetime{ grid-template-columns: repeat(2, minmax(0,1fr)); grid-auto-rows: var(--cell-size); }
+  }
+
+  .glass-field{
+    border-radius:14px;
+    padding:14px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 6px 18px rgba(2,6,23,0.45), inset 0 1px 0 rgba(255,255,255,0.02);
     display:flex;
     flex-direction:column;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+    transition: transform .35s ease, box-shadow .35s ease;
   }
-  .field:focus-within{ transform: translateY(-4px); box-shadow: 0 12px 30px rgba(75,140,255,0.06); }
+
+  .glass-field:hover{ transform: translateY(-6px); box-shadow: 0 18px 40px rgba(2,6,23,0.6); }
 
   label{
     font-size:12px;
@@ -121,23 +189,53 @@
     margin-bottom:8px;
     display:block;
   }
-  input[type="text"], input[type="number"], select{
-    border:0;
-    outline:0;
-    background:transparent;
-    font-size:16px;
-    color: #071033;
-    padding:6px 0;
-    width:100%;
-  }
-  input[readonly]{ color:#334155; font-weight:600; }
 
-  /* Single column fields */
-  .col{
+  input[type="text"], input[type="number"], input[type="datetime-local"], input[type="time"], select{
+    width:100%;
+    height:44px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,0.06);
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+    color:var(--text);
+    padding:10px 12px;
+    box-sizing:border-box;
+    outline:none;
+    transition: box-shadow .25s, transform .18s;
+    font-size:15px;
+    backdrop-filter: blur(6px);
+  }
+
+  input[readonly]{
+    cursor:default;
+    color:var(--muted);
+    font-weight:600;
+  }
+
+  input:focus, select:focus{
+    box-shadow: 0 6px 30px rgba(120,200,255,0.12);
+    transform: translateY(-2px);
+    border-color: rgba(120,200,255,0.28);
+  }
+
+  /* Larger single-row fields */
+  .full-row{
     display:grid;
     grid-template-columns: 1fr;
+  }
+
+  .two-cols{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
     gap:12px;
   }
+
+  @media (max-width:720px){
+    .two-cols{ grid-template-columns: 1fr; }
+  }
+
+  /* small helper text and errors */
+  .hint{ font-size:12px; color:var(--muted); margin-top:8px; }
+  .error{ color:var(--danger); font-size:13px; margin-top:8px; display:none; }
 
   /* Submit area */
   .actions{
@@ -147,327 +245,440 @@
     justify-content:space-between;
     margin-top:6px;
   }
+
+  .version{
+    font-size:12px;
+    color:var(--muted);
+  }
+
   .btn{
-    background: linear-gradient(90deg,var(--accent), #7dd3fc);
-    color:white;
-    border:0;
-    padding:10px 16px;
+    background: linear-gradient(90deg, rgba(120,200,255,0.18), rgba(160,120,255,0.14));
+    border:1px solid rgba(255,255,255,0.08);
+    color:var(--text);
+    padding:12px 18px;
     border-radius:12px;
-    font-weight:600;
     cursor:pointer;
-    box-shadow: 0 10px 30px rgba(75,140,255,0.18);
-    transition: transform .18s ease, box-shadow .18s ease, opacity .12s;
+    font-weight:700;
+    letter-spacing:0.3px;
+    box-shadow: 0 8px 30px rgba(120,200,255,0.08);
+    transition: transform .18s ease, box-shadow .18s ease;
   }
-  .btn:active{ transform: translateY(1px) scale(.998); }
-  .btn.secondary{
-    background:transparent;
-    color:var(--accent);
-    border:1px solid rgba(75,140,255,0.12);
-    box-shadow:none;
+  .btn:active{ transform: translateY(2px) scale(.998); }
+  .btn.primary{
+    background: linear-gradient(90deg, rgba(120,230,200,0.22), rgba(120,200,255,0.18));
+    color:#04202a;
   }
 
-  .note{ color:var(--muted); font-size:13px; }
-
-  /* small helper text and errors */
-  .error{ color:#ef4444; font-size:13px; display:none; margin-top:6px; }
-  .success{ color:#059669; font-size:13px; display:none; margin-top:6px; }
-
-  footer{
-    margin-top:18px;
-    display:flex;
+  /* Submit animation / loader */
+  .sending{
+    display:inline-flex;
+    gap:8px;
     align-items:center;
-    justify-content:space-between;
-    gap:12px;
+    padding:10px 14px;
+    border-radius:999px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.04);
     color:var(--muted);
     font-size:13px;
   }
 
-  /* subtle floating animation for inputs */
-  @keyframes floaty {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-6px); }
-    100% { transform: translateY(0px); }
+  .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--accent);
+    animation: blink 1s infinite;
   }
-  .logo{ animation: floaty 6s ease-in-out infinite; }
+  .dot:nth-child(2){ animation-delay:.12s; }
+  .dot:nth-child(3){ animation-delay:.24s; }
+  @keyframes blink{ 0%{opacity:0.2; transform:translateY(0)} 50%{opacity:1; transform:translateY(-6px)} 100%{opacity:0.2; transform:translateY(0)} }
 
-  /* Responsive */
-  @media (max-width:720px){
-    .row{ flex-direction:column; }
-    .actions{ flex-direction:column; align-items:stretch; }
+  /* success message */
+  .toast{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+    border:1px solid rgba(255,255,255,0.06);
+    padding:12px 16px;
+    border-radius:12px;
+    color:var(--text);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transform: translateY(20px);
+    opacity:0;
+    transition: transform .35s, opacity .35s;
+    z-index:999;
   }
+  .toast.show{ transform: translateY(0); opacity:1; }
+
+  /* small responsive tweaks */
+  @media (max-width:420px){
+    .card{ padding:18px; border-radius:14px; }
+    h1{ font-size:18px; }
+  }
+
+  /* tiny animated focus sheen on inputs */
+  .glass-field::before{
+    content:"";
+    position:absolute;
+    left:-40%;
+    top:-40%;
+    width:200%;
+    height:200%;
+    background: radial-gradient(600px 200px at 20% 20%, rgba(255,255,255,0.02), transparent 10%);
+    transform: rotate(12deg);
+    pointer-events:none;
+    transition: opacity .6s;
+    opacity:0;
+  }
+  .glass-field:hover::before{ opacity:1; }
+
+  /* small label badges */
+  .badge{
+    font-size:11px;
+    padding:6px 8px;
+    border-radius:999px;
+    background: rgba(255,255,255,0.03);
+    color:var(--muted);
+    border:1px solid rgba(255,255,255,0.02);
+  }
+
 </style>
 </head>
 <body>
+  <div class="scene" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
   <div class="wrap">
     <main class="card" role="main" aria-labelledby="title">
-      <header class="title">
+      <header>
         <div class="brand">
-          <div class="logo">SR</div>
+          <div class="logo" aria-hidden="true">
+            <!-- decorative -->
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#7CD1FF"/><stop offset="1" stop-color="#C78BFF"/></linearGradient></defs>
+              <rect x="3" y="3" width="18" height="18" rx="4" fill="url(#g)" opacity="0.95"/>
+              <path d="M7 12h10" stroke="#04202a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+            </svg>
+          </div>
           <div>
             <h1 id="title">Service Reporting</h1>
-            <p class="lead">Quick daily report — version 4.0</p>
+            <div class="meta">Отчетный бланк • версия <span class="badge">5.0</span></div>
           </div>
         </div>
-        <div style="text-align:right">
-          <div style="font-size:12px;color:var(--muted)">Clean glass UI • animated</div>
-          <div style="font-size:12px;color:var(--muted)">White theme</div>
-        </div>
+        <div class="version">Liquid Glass UI</div>
       </header>
 
-      <form id="reportForm" autocomplete="off">
-        <!-- Row 1: Date and Time (in one line) -->
-        <div class="row">
-          <div class="field">
+      <!-- Form: uses FormSubmit (action) and AJAX fallback -->
+      <form id="reportForm" autocomplete="off" novalidate>
+        <!-- Row 1: Date & Time (same size squares) -->
+        <div class="grid-row row-datetime">
+          <div class="glass-field" aria-hidden="false">
             <label for="date">Date</label>
-            <input id="date" name="Date" type="text" readonly />
+            <input id="date" name="date" type="text" readonly aria-readonly="true" />
+            <div class="hint">Дата заполняется автоматически</div>
           </div>
-          <div class="field">
+
+          <div class="glass-field">
             <label for="time">Time</label>
-            <input id="time" name="Time" type="text" readonly />
+            <input id="time" name="time" type="text" readonly aria-readonly="true" />
+            <div class="hint">Время заполняется автоматически</div>
           </div>
         </div>
 
-        <!-- Row 2: Temperature -->
-        <div class="col">
-          <div class="field">
-            <label for="temperature">Temperature</label>
-            <input id="temperature" name="Temperature" type="text"
-              placeholder="e.g. 23.5 or +5, -2"
-              inputmode="decimal"
-              pattern="^[0-9\+\-\,\.]+$"
-              title="Только цифры и символы , . + -"
-              required />
-            
-          </div>
+        <!-- Temperature -->
+        <div class="glass-field full-row">
+          <label for="temperature">Temperature</label>
+          <input id="temperature" name="temperature" type="text" inputmode="numeric" placeholder="e.g. 23.5, -5, +12.3" aria-describedby="tempHint" />
+          <div id="tempHint" class="hint">Только цифры и символы <strong>. , - +</strong> разрешены</div>
+          <div id="tempError" class="error">Недопустимые символы — используйте только цифры и . , - +</div>
         </div>
 
-        <!-- Row 3: Working hours -->
-        <div class="col">
-          <div class="field">
-            <label for="hours">Working hours</label>
-            <input id="hours" name="WorkingHours" type="text"
-              placeholder="e.g. 8 or 8.5 or 08:30"
-              inputmode="numeric"
-              pattern="^[0-9\.\,\:\;]+$"
-              title="Только цифры и символы . , : ;"
-              required />
-           
-          </div>
+        <!-- Working hours -->
+        <div class="glass-field full-row">
+          <label for="hours">Working hours</label>
+          <input id="hours" name="working_hours" type="text" inputmode="numeric" placeholder="e.g. 8, 7.5, 4-6" aria-describedby="hoursHint" />
+          <div id="hoursHint" class="hint">Только цифры и символы <strong>. , - +</strong> разрешены</div>
+          <div id="hoursError" class="error">Недопустимые символы — используйте только цифры и . , - +</div>
         </div>
 
-        <!-- Row 4: How many people have you helped -->
-        <div class="col">
-          <div class="field">
-            <label for="helped">How many people have you helped</label>
-            <input id="helped" name="HelpedCount" type="text"
-              placeholder="e.g. 3"
-              inputmode="numeric"
-              pattern="^[0-9]+$"
-              title="Только целое число"
-              required />
-            
-          </div>
+        <!-- How many people -->
+        <div class="glass-field full-row">
+          <label for="people">How many people have you helped</label>
+          <input id="people" name="people_helped" type="number" min="0" inputmode="numeric" placeholder="0" />
+          <div class="hint">Введите целое число</div>
         </div>
 
-        <!-- Row 5: Work difficulty -->
-        <div class="col">
-          <div class="field">
+        <!-- Work difficulty and Reported by -->
+        <div class="two-cols">
+          <div class="glass-field">
             <label for="difficulty">Work difficulty</label>
-            <select id="difficulty" name="WorkDifficulty" required>
-              <option value="">-- Выберите --</option>
+            <select id="difficulty" name="work_difficulty" required>
               <option value="Neutral">Neutral</option>
               <option value="Moderate">Moderate</option>
               <option value="Hard">Hard</option>
             </select>
-            
+            <div class="hint">Выберите уровень сложности</div>
+          </div>
+
+          <div class="glass-field">
+            <label for="reported">Reported by</label>
+            <input id="reported" name="reported_by" type="text" placeholder="Ваше имя" required />
+            <div class="hint">Укажите имя, которое будет в отчете</div>
           </div>
         </div>
 
-        <!-- Row 6: Reported by -->
-        <div class="col">
-          <div class="field">
-            <label for="reportedBy">Reported by</label>
-            <input id="reportedBy" name="ReportedBy" type="text"
-              placeholder="Ваше имя"
-              pattern="^[A-Za-zА-Яа-яЁё\s\-\']+$"
-              title="Только буквы, пробелы, дефис или апостроф"
-              required />
-         
-          </div>
-        </div>
+        <!-- Hidden fields for FormSubmit (if used) -->
+        <input type="hidden" name="_subject" value="New Service Report" />
+        <input type="hidden" name="_template" value="table" />
+        <input type="hidden" name="_captcha" value="false" />
+        <input type="hidden" name="_next" value="https://formsubmit.co/thankyou" />
 
-        <!-- Hidden fields for FormSubmit -->
-        <input type="hidden" name="_subject" value="Service Reporting Form Submission">
-        <input type="hidden" name="_next" value="">
-        <input type="hidden" name="_captcha" value="false">
-
+        <!-- Actions -->
         <div class="actions">
-          <div>
-            <button type="submit" class="btn">Submit</button>
-            <button type="button" id="resetBtn" class="btn secondary">Reset</button>
-          </div>
-          <div style="text-align:right">
-            <div id="status" class="note">Готово к отправке</div>
-            <div id="error" class="error"></div>
-            <div id="success" class="success"></div>
+          <div class="version">Отправка на: <span class="badge">communityofdevelopingcraftsmen@gmail.com</span></div>
+          <div style="display:flex;gap:12px;align-items:center;">
+            <button type="button" id="demoFill" class="btn" title="Заполнить демо">Demo fill</button>
+            <button type="submit" id="submitBtn" class="btn primary">Submit</button>
           </div>
         </div>
       </form>
-
-      <footer>
-        <div>© Service Reporting</div>
-        <div>version 4.0</div>
-      </footer>
     </main>
   </div>
 
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
 <script>
-  // --- Utilities ---
-  const $ = (sel) => document.querySelector(sel);
+/*
+  Service Reporting — client script
+  - Автообновление даты/времени
+  - Валидация полей (температура, часы)
+  - Отправка через FormSubmit (AJAX POST). Если AJAX не сработает, форма можно отправить обычным POST (fallback).
+  - Много анимаций и UX-улучшений.
+*/
 
-  // Set date and time initially and keep time updated
-  function pad(n){ return n<10? '0'+n : n; }
-  function updateDateTime(){
-    const now = new Date();
-    const dateStr = now.toLocaleDateString(undefined, {year:'numeric', month:'2-digit', day:'2-digit'});
-    const timeStr = now.toLocaleTimeString(undefined, {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-    $('#date').value = dateStr;
-    $('#time').value = timeStr;
-  }
-  updateDateTime();
-  setInterval(updateDateTime, 1000);
+/* Helpers */
+const $ = (sel) => document.querySelector(sel);
+const form = $('#reportForm');
+const dateInput = $('#date');
+const timeInput = $('#time');
+const tempInput = $('#temperature');
+const hoursInput = $('#hours');
+const peopleInput = $('#people');
+const toast = $('#toast');
+const submitBtn = $('#submitBtn');
+const demoBtn = $('#demoFill');
 
-  // Form validation helpers
-  function matchesPattern(el){
-    const pat = el.getAttribute('pattern');
-    if(!pat) return true;
-    const re = new RegExp(pat);
-    return re.test(el.value.trim());
-  }
+const EMAIL_ENDPOINT = 'https://formsubmit.co/communityofdevelopingcraftsmen@gmail.com';
 
-  function showError(msg){
-    const e = $('#error');
-    e.textContent = msg;
-    e.style.display = msg ? 'block' : 'none';
-  }
-  function showSuccess(msg){
-    const s = $('#success');
-    s.textContent = msg;
-    s.style.display = msg ? 'block' : 'none';
-  }
+/* Date & Time auto-fill (local time) */
+function updateDateTime(){
+  const now = new Date();
+  // Date in format YYYY-MM-DD (readable)
+  const dateStr = now.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+  const timeStr = now.toLocaleTimeString(undefined, { hour:'2-digit', minute:'2-digit' });
+  dateInput.value = dateStr;
+  timeInput.value = timeStr;
+}
+updateDateTime();
+setInterval(updateDateTime, 30_000); // обновлять каждые 30 секунд
 
-  // Reset button
-  $('#resetBtn').addEventListener('click', () => {
-    $('#reportForm').reset();
-    updateDateTime();
-    showError('');
-    showSuccess('');
-    $('#status').textContent = 'Форма очищена';
-    setTimeout(()=> $('#status').textContent = 'Готово к отправке', 1800);
+/* Validation rules:
+   - temperature & working hours: only digits and symbols . , - +
+   - people: integer >=0
+*/
+const allowedPattern = /^[0-9\.\,\-\+\s]*$/;
+
+function validateFieldPattern(inputEl, errorElId){
+  const v = inputEl.value.trim();
+  const ok = v === '' || allowedPattern.test(v);
+  const errEl = document.getElementById(errorElId);
+  if(!ok){
+    errEl.style.display = 'block';
+    inputEl.setAttribute('aria-invalid','true');
+  } else {
+    errEl.style.display = 'none';
+    inputEl.removeAttribute('aria-invalid');
+  }
+  return ok;
+}
+
+/* Prevent typing forbidden characters in real-time */
+function attachFilter(inputEl){
+  inputEl.addEventListener('input', (e) => {
+    const before = inputEl.value;
+    // remove any characters not allowed
+    const filtered = before.split('').filter(ch => /[0-9\.\,\-\+\s]/.test(ch)).join('');
+    if(filtered !== before){
+      const pos = inputEl.selectionStart - (before.length - filtered.length);
+      inputEl.value = filtered;
+      inputEl.setSelectionRange(pos,pos);
+    }
   });
+}
 
-  // Modern FormSubmit AJAX endpoint
-  // Using FormSubmit AJAX: https://formsubmit.co/ajax/<email>
-  const endpoint = 'https://formsubmit.co/ajax/communityofdevelopingcraftsmen@gmail.com';
+attachFilter(tempInput);
+attachFilter(hoursInput);
 
-  document.getElementById('reportForm').addEventListener('submit', async function(e){
-    e.preventDefault();
-    showError('');
-    showSuccess('');
-    $('#status').textContent = 'Проверка данных...';
+/* People input: only non-negative integers */
+peopleInput.addEventListener('input', () => {
+  // remove non-digits
+  const v = peopleInput.value.replace(/[^\d]/g,'');
+  peopleInput.value = v;
+});
 
-    // Basic validation per-field
-    const temp = $('#temperature');
-    const hours = $('#hours');
-    const helped = $('#helped');
-    const reportedBy = $('#reportedBy');
-    const difficulty = $('#difficulty');
+/* Demo fill */
+demoBtn.addEventListener('click', () => {
+  tempInput.value = "23.5";
+  hoursInput.value = "8";
+  peopleInput.value = "12";
+  $('#difficulty').value = 'Moderate';
+  $('#reported').value = 'Иван Иванов';
+  showToast('Демо-данные заполнены', 1800);
+});
 
-    if(!matchesPattern(temp) || temp.value.trim()===''){
-      showError('Поле Temperature: только цифры и символы , . + -');
-      temp.focus(); return;
-    }
-    if(!matchesPattern(hours) || hours.value.trim()===''){
-      showError('Поле Working hours: только цифры и символы . , : ;');
-      hours.focus(); return;
-    }
-    if(!matchesPattern(helped) || helped.value.trim()===''){
-      showError('Поле How many people have you helped: только целое число');
-      helped.focus(); return;
-    }
-    if(!difficulty.value){
-      showError('Выберите Work difficulty');
-      difficulty.focus(); return;
-    }
-    if(!matchesPattern(reportedBy) || reportedBy.value.trim()===''){
-      showError('Поле Reported by: только буквы и пробелы');
-      reportedBy.focus(); return;
-    }
+/* Toast helper */
+let toastTimer = null;
+function showToast(msg, ms = 3000){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ toast.classList.remove('show'); }, ms);
+}
 
-    // Prepare form data
-    const form = e.target;
-    const formData = new FormData(form);
+/* Submit handler: validate then send via fetch to FormSubmit */
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    // Add date/time values (they are readonly inputs already included)
-    formData.set('Date', $('#date').value);
-    formData.set('Time', $('#time').value);
+  // Validate patterns
+  const okTemp = validateFieldPattern(tempInput, 'tempError');
+  const okHours = validateFieldPattern(hoursInput, 'hoursError');
 
-    // Set _next to a friendly message page (optional). We'll set to current location.
-    formData.set('_next', window.location.href);
+  // People must be integer (or empty allowed)
+  const peopleVal = peopleInput.value.trim();
+  const okPeople = peopleVal === '' || /^\d+$/.test(peopleVal);
 
-    $('#status').textContent = 'Отправка...';
+  if(!okPeople){
+    showToast('Поле "How many people" должно быть целым числом', 3000);
+    peopleInput.focus();
+    return;
+  }
 
-    try{
-      const resp = await fetch(endpoint, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
+  if(!okTemp || !okHours){
+    showToast('Проверьте поля на недопустимые символы', 3000);
+    return;
+  }
 
-      if(!resp.ok){
-        const text = await resp.text();
-        throw new Error('Ошибка отправки: ' + resp.status + ' ' + text);
+  // Prepare form data
+  const fd = new FormData();
+  fd.append('date', dateInput.value);
+  fd.append('time', timeInput.value);
+  fd.append('temperature', tempInput.value);
+  fd.append('working_hours', hoursInput.value);
+  fd.append('people_helped', peopleInput.value);
+  fd.append('work_difficulty', $('#difficulty').value);
+  fd.append('reported_by', $('#reported').value || '');
+  fd.append('_subject', 'New Service Report');
+  fd.append('_template', 'table');
+  fd.append('_captcha', 'false');
+
+  // UI: show sending state
+  const originalBtnText = submitBtn.innerHTML;
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="sending"><span class="dot"></span><span class="dot"></span><span class="dot"></span> Sending</span>';
+
+  try {
+    // Try AJAX POST to FormSubmit
+    const res = await fetch(EMAIL_ENDPOINT, {
+      method: 'POST',
+      body: fd,
+      mode: 'cors',
+      headers: {
+        // FormSubmit accepts normal form posts; do not set content-type to allow multipart
+        'Accept': 'application/json'
       }
-      const data = await resp.json();
-      // success
-      showSuccess('Форма успешно отправлена. Спасибо!');
-      $('#status').textContent = 'Отправлено';
-      // Optionally reset after success
-      setTimeout(()=> {
-        $('#reportForm').reset();
-        updateDateTime();
-        $('#status').textContent = 'Готово к отправке';
-      }, 1800);
-    }catch(err){
-      console.error(err);
-      showError('Не удалось отправить форму. Попробуйте ещё раз. ' + (err.message || ''));
-      $('#status').textContent = 'Ошибка';
-    }
-  });
-
-  // Extra: prevent letters on numeric-like fields while typing (UX)
-  function allowChars(el, allowedRegex){
-    el.addEventListener('input', () => {
-      const v = el.value;
-      const filtered = v.split('').filter(ch => allowedRegex.test(ch)).join('');
-      if(filtered !== v) el.value = filtered;
     });
-  }
-  // Temperature: digits and , . + -
-  allowChars($('#temperature'), /[0-9\+\-\,\.]/);
-  // Hours: digits and . , : ;
-  allowChars($('#hours'), /[0-9\.\,\:\;]/);
-  // Helped: digits only
-  allowChars($('#helped'), /[0-9]/);
-  // ReportedBy: letters, spaces, hyphen, apostrophe (Cyrillic and Latin)
-  allowChars($('#reportedBy'), /[A-Za-zА-Яа-яЁё\s\-\']/);
 
-  // Accessibility: focus first input
-  window.addEventListener('load', ()=> {
-    $('#temperature').focus();
-  });
+    // FormSubmit returns JSON on success; handle both JSON and redirect fallback
+    if(res.ok){
+      // Try parse JSON
+      let json = null;
+      try { json = await res.json(); } catch(err){ /* not JSON */ }
+      showToast('Отчет успешно отправлен', 3500);
+      form.reset();
+      updateDateTime();
+    } else {
+      // Non-OK: fallback to direct POST by creating a temporary form and submitting
+      showToast('AJAX не сработал — пробую отправить обычным POST...', 2200);
+      // create fallback form
+      const tmp = document.createElement('form');
+      tmp.action = EMAIL_ENDPOINT;
+      tmp.method = 'POST';
+      tmp.style.display = 'none';
+      // copy fields
+      for(const [k,v] of fd.entries()){
+        const inp = document.createElement('input');
+        inp.type = 'hidden';
+        inp.name = k;
+        inp.value = v;
+        tmp.appendChild(inp);
+      }
+      document.body.appendChild(tmp);
+      tmp.submit();
+    }
+  } catch(err){
+    // Network or CORS error: fallback to normal POST
+    console.error(err);
+    showToast('Ошибка сети. Попытка отправки обычным POST...', 2200);
+    const tmp = document.createElement('form');
+    tmp.action = EMAIL_ENDPOINT;
+    tmp.method = 'POST';
+    tmp.style.display = 'none';
+    // copy fields
+    for(const [k,v] of fd.entries()){
+      const inp = document.createElement('input');
+      inp.type = 'hidden';
+      inp.name = k;
+      inp.value = v;
+      tmp.appendChild(inp);
+    }
+    document.body.appendChild(tmp);
+    tmp.submit();
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalBtnText;
+  }
+});
+
+/* Accessibility: allow Enter to submit when focused on last field */
+$('#reported').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') {
+    e.preventDefault();
+    submitBtn.click();
+  }
+});
+
+/* Small parallax on scroll to make glass feel alive */
+let lastScroll = 0;
+window.addEventListener('scroll', () => {
+  const s = window.scrollY;
+  const diff = s - lastScroll;
+  lastScroll = s;
+  // subtle transform on card
+  const card = document.querySelector('.card');
+  const t = Math.min(12, s / 40);
+  card.style.transform = `translateY(${ -8 - t }px)`;
+});
+
+/* Initial micro-animations for inputs */
+document.querySelectorAll('input, select').forEach((el, idx) => {
+  el.style.opacity = 0;
+  el.style.transform = 'translateY(8px)';
+  setTimeout(()=>{ el.style.transition = 'opacity .6s ease, transform .6s ease'; el.style.opacity = 1; el.style.transform = 'translateY(0)'; }, 120 + idx*60);
+});
+
 </script>
 </body>
 </html>
